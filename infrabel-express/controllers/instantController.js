@@ -15,6 +15,11 @@ const InstantController = {
         InstantModel.getById(req.params.id).then((data) => {
             res.status(200).json(data.recordset)
         })
+    },
+    getByIdAndLanguage: (req, res) => {
+        InstantModel.getByIdAndLanguage(req.params).then((data) => {
+            res.status(200).json(data.recordset)
+        })
     }
 }
 

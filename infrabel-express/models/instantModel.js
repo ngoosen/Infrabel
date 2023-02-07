@@ -15,6 +15,11 @@ const InstantModel = {
         return dbConnect.then((conn) => {
             return conn.query("SELECT * FROM instant WHERE id_instant = " + id)
         })
+    },
+    getByIdAndLanguage: (params) => {
+        return dbConnect.then((conn) => {
+            return conn.query("SELECT id_instant, " + params.language + "_instant FROM instant WHERE id_instant = " + params.id)
+        })
     }
 }
 
