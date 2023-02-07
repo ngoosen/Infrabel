@@ -1,6 +1,4 @@
-const Connection = require('tedious').Connection
 const dbConnect = require('./db').connect()
-const Request = require('tedious').Request
 
 const LigneModel = {
     getAll : () => {
