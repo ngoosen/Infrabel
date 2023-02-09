@@ -1,1 +1,39 @@
-<p>ponctualite works!</p>
+<h1>Poncualité des trains</h1>
+
+<div class="container">
+    <div class="gare">
+        <p>Choisissez votre gare de départ ainsi que la gare de votre destination, appuyez ensuite sur "rechercher" afin de voir la poncualite 
+            de votre train.</p>
+        <div class="recherche">
+    <mat-form-field>
+      <mat-label>
+        Gare de départ
+      </mat-label>
+      <input matInput type="text" [formControl]="mycontrol" [matAutocomplete]="auto"/>
+      <mat-autocomplete #auto='matAutocomplete'>
+        <mat-option *ngFor="let option of filterredOption | async" [value]="option">
+          {{option}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
+
+    <mat-form-field>
+        <mat-label>
+        Gare  de destination
+        </mat-label>
+        <input matInput  type="text" [formControl]="mycontrol" [matAutocomplete]="auto"/>
+        <mat-autocomplete #auto='matAutocomplete'>
+          <mat-option *ngFor="let option of filterredOption | async" [value]="option">
+            {{option}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary">rechercher</button>
+    </div>
+
+    </div>
+  </div>
+
+
