@@ -17,7 +17,7 @@ const LigneArretModel = {
             "FROM ligne_arret la " +
             "JOIN arret a ON la.FK_id_arret = a.id_arret " +
             "JOIN ligne l ON la.FK_id_ligne = l.id_ligne " +
-            "WHERE l.id_ligne = " + id)
+            "WHERE l.id_ligne = '" + id + "'")
     },
     getByArretID: (id) => {
         return dbConnect.then((conn) => {
