@@ -10,6 +10,7 @@ const RelationRouter = require("./relationRouter")
 const NumTrainRouter = require("./num_trainRouter")
 const LigneArretRouter = require("./ligne_arretRouter")
 const PonctualiteMomentRouter = require("./ponctualite_momentRouter")
+const PonctualiteJRouter = require("./ponctualite_j-1Router")
 
 router.use("/api/v1/lignes", LigneRouter)
 router.use("/api/v1/arrets", ArretRouter)
@@ -21,6 +22,7 @@ router.use("/api/v1/relations", RelationRouter)
 router.use("/api/v1/num_train", NumTrainRouter)
 router.use("/api/v1/ligne_arret", LigneArretRouter)
 router.use("/api/v1/ponctualite_des_relations_IC_par_moment", PonctualiteMomentRouter)
+router.use("/api/v1/ponctualite_J-1", PonctualiteJRouter)
 
 router.all("*", (req, res) => {
     res.status(404).send("Erreur 404")
