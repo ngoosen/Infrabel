@@ -13,7 +13,7 @@ const IncidentTypeModel = {
     },
     getByLanguage: (language) => {
         return dbConnect.then((conn) => {
-            return conn.query("SELECT " + language + "_incident_type FROM incident_type")
+            return conn.query("SELECT id_incident_type, " + language + "_incident_type FROM incident_type")
         })
     },
     getByIdAndLanguage: (params) => {
