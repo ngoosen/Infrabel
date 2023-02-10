@@ -2,38 +2,28 @@
 
 <div class="container">
     <div class="gare">
-        <p>Choisissez votre gare de départ ainsi que la gare de votre destination, appuyez ensuite sur "rechercher" afin de voir la poncualite 
-            de votre train.</p>
-        <div class="recherche">
-    <mat-form-field>
-      <mat-label>
-        Gare de départ
-      </mat-label>
-      <input matInput type="text" [formControl]="mycontrol" [matAutocomplete]="auto"/>
-      <mat-autocomplete #auto='matAutocomplete'>
-        <mat-option *ngFor="let option of filterredOption | async" [value]="option">
-          {{option}}
-        </mat-option>
-      </mat-autocomplete>
-    </mat-form-field>
-
-
-    <mat-form-field>
-        <mat-label>
-        Gare  de destination
-        </mat-label>
-        <input matInput  type="text" [formControl]="mycontrol" [matAutocomplete]="auto"/>
-        <mat-autocomplete #auto='matAutocomplete'>
-          <mat-option *ngFor="let option of filterredOption | async" [value]="option">
-            {{option}}
+  
+      <p>Choisissez votre gare de départ ainsi que la gare de votre destination, appuyez ensuite sur "rechercher" afin de voir la poncualite de votre train.</p>
+      <mat-form-field>
+        <input type="text" placeholder="départ" aria-label="Recherche" matInput [formControl]="departControl" [matAutocomplete]="auto1">
+        <mat-autocomplete #auto1="matAutocomplete">
+          <mat-option *ngFor="let option of filterredOption |async" [value]="option">
+            {{ option }}
           </mat-option>
         </mat-autocomplete>
       </mat-form-field>
-
-      <button mat-raised-button color="primary">rechercher</button>
-    </div>
-
+      
+      <mat-form-field>
+        <input type="text" placeholder="arrivé" aria-label="Recherche" matInput [formControl]="arriveeControl " [matAutocomplete]="auto2">
+        <mat-autocomplete #auto2="matAutocomplete">
+          <mat-option *ngFor="let option of filterredOption |async" [value]="option">
+            {{ option }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+      
+      <button mat-raised-button  color="primary" (click)="showValues()">Lancer la recherche</button>
+      <p *ngIf="showResult">Départ: {{ departControl.value }} / Arrivée: {{ arriveeControl.value }}</p>
     </div>
   </div>
-
 
