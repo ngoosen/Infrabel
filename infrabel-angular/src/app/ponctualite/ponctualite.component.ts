@@ -19,12 +19,19 @@ export class PonctualiteComponent implements OnInit {
 
   filterredOption:Observable<string[]>
 
+  departControl = new FormControl();
+  arriveeControl = new FormControl();
+  showResult=false
+
+
     //filtre recherche
   ngOnInit(): void {
     this.filterredOption=this.mycontrol.valueChanges.pipe(
       startWith(''),
       map(value=>this._filter(value))
+
     )
+    
   }
 
     private _filter(value:string){
@@ -35,5 +42,8 @@ export class PonctualiteComponent implements OnInit {
   //
 
   //bouton recherche
+  showValues() {
+    this.showResult = true;
+  }
 
 }
