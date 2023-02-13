@@ -4,23 +4,23 @@ const PonctualiteJModel = {
     getAll: () => {
         return dbConnect.then((conn) => {
             return conn.query("SELECT t.id_trajet, " +
-            "CAST(t.h_arrivee_reel AS TIME) AS [Arrivée réelle], " +
-            "t.h_arrivee_prevu AS [Arrivée prévue], " +
-            "t.h_depart_reel AS [Départ réel], " +
-            "t.h_depart_prevu AS [Départ prévu], " +
-            "t.retard_arrivee AS [Retard à l'arrivée], " +
-            "t.retard_depart AS [Retard au départ], " +
+            "CAST(t.h_arrivee_reel AS TIME) AS arr_reel, " +
+            "t.h_arrivee_prevu AS arr_prev, " +
+            "t.h_depart_reel AS dep_reel, " +
+            "t.h_depart_prevu AS dep_prev, " +
+            "t.retard_arrivee AS retard_arr, " +
+            "t.retard_depart AS retard_dep, " +
             "r.code_relation + ': ' + " +
                 "(SELECT ar.nom_arret " + 
                 "FROM arret ar " +
                 "WHERE ar.id_arret = r.FK_gare_1) + ' - ' + " +
                 "(SELECT ar.nom_arret " +
                 "FROM arret ar " +
-                "WHERE ar.id_arret = r.FK_gare_2) AS Relation, " +
-            "l1.id_ligne AS [Ligne de départ], " +
-            "l2.id_ligne AS [Ligne d'arrivée], " +
-            "nt.num_train AS [Numéro de train], " +
-            "a.nom_arret AS [Arrêt] " +
+                "WHERE ar.id_arret = r.FK_gare_2) AS relation, " +
+            "l1.id_ligne AS ligne_dep, " +
+            "l2.id_ligne AS ligne_arr, " +
+            "nt.num_train AS num_train, " +
+            "a.nom_arret AS arret " +
         "FROM trajet_J_1 t " +
             "JOIN relation r ON t.FK_relation_trajet = r.id_relation " +
             "JOIN ligne l1 ON t.FK_ligne_depart = l1.id_ligne " +
@@ -32,23 +32,23 @@ const PonctualiteJModel = {
     getByID: (id) => {
         return dbConnect.then((conn) => {
             return conn.query("SELECT t.id_trajet, " +
-            "CAST(t.h_arrivee_reel AS TIME) AS [Arrivée réelle], " +
-            "t.h_arrivee_prevu AS [Arrivée prévue], " +
-            "t.h_depart_reel AS [Départ réel], " +
-            "t.h_depart_prevu AS [Départ prévu], " +
-            "t.retard_arrivee AS [Retard à l'arrivée], " +
-            "t.retard_depart AS [Retard au départ], " +
+            "CAST(t.h_arrivee_reel AS TIME) AS arr_reel, " +
+            "t.h_arrivee_prevu AS arr_prev, " +
+            "t.h_depart_reel AS dep_reel, " +
+            "t.h_depart_prevu AS dep_prev, " +
+            "t.retard_arrivee AS retard_arr, " +
+            "t.retard_depart AS retard_dep, " +
             "r.code_relation + ': ' + " +
                 "(SELECT ar.nom_arret " + 
                 "FROM arret ar " +
                 "WHERE ar.id_arret = r.FK_gare_1) + ' - ' + " +
                 "(SELECT ar.nom_arret " +
                 "FROM arret ar " +
-                "WHERE ar.id_arret = r.FK_gare_2) AS Relation, " +
-            "l1.id_ligne AS [Ligne de départ], " +
-            "l2.id_ligne AS [Ligne d'arrivée], " +
-            "nt.num_train AS [Numéro de train], " +
-            "a.nom_arret AS [Arrêt] " +
+                "WHERE ar.id_arret = r.FK_gare_2) AS relation, " +
+            "l1.id_ligne AS ligne_dep, " +
+            "l2.id_ligne AS ligne_arr, " +
+            "nt.num_train AS num_train, " +
+            "a.nom_arret AS arret " +
         "FROM trajet_J_1 t " +
             "JOIN relation r ON t.FK_relation_trajet = r.id_relation " +
             "JOIN ligne l1 ON t.FK_ligne_depart = l1.id_ligne " +
