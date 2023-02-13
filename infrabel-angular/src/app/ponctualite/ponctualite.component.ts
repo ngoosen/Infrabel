@@ -4,6 +4,7 @@ import { withPreloading } from '@angular/router';
 import { Observable} from 'rxjs';
 import { map,startWith } from 'rxjs';
 import { __values } from 'tslib';
+import { LigneArretService } from '../services/ligne-arret.service';
 
 
 @Component({
@@ -13,7 +14,11 @@ import { __values } from 'tslib';
 })
 export class PonctualiteComponent implements OnInit {
 
-  options:string[]=["Gare du nord", "Delta","Ottignies"];
+
+  constructor( private _ligneArretService: LigneArretService ){}
+
+
+  options:string[]=[]
 
   mycontrol=new FormControl
 
@@ -31,7 +36,21 @@ export class PonctualiteComponent implements OnInit {
       map(value=>this._filter(value))
 
     )
-    
+
+    this._ligneArretService.getStops().subscribe( {
+      next: (data) => {
+        let temptab = data[0]
+
+        for(let obj of temptab){
+          this.options.push(obj.nom_arret)
+        }
+      },
+      error: (err) => {
+        console.log("POUF " + err);
+      }
+    })
+
+
   }
 
     private _filter(value:string){

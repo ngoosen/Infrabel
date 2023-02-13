@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { PonctualiteJ1Service } from '../services/ponctualite-j1.service';
+import { LigneArretService } from '../services/ligne-arret.service';
 
 @Component({
   selector: 'app-home',
@@ -8,11 +8,11 @@ import { PonctualiteJ1Service } from '../services/ponctualite-j1.service';
 })
 export class HomeComponent {
 
-  constructor(private _service: PonctualiteJ1Service){}
+  constructor(private _service: LigneArretService){}
 
   // Exemple de call d'API
   ngOnInit(){
-    this._service.getOnePonctuality(3).subscribe({
+    this._service.getStops().subscribe({
       next: (data) => {
         console.log(data);
       },

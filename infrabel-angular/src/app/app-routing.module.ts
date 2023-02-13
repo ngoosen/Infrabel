@@ -6,9 +6,10 @@ import { ProblemeComponent } from './probleme/probleme.component';
 
 const routes: Routes = [
   {path:'home', component:HomeComponent},
+  {path:'', redirectTo:'home',pathMatch:'full'},
   {path:'ponctualite', component:PonctualiteComponent},
   {path:'probleme', component: ProblemeComponent}
-  
+
 ];
 
 @NgModule({
