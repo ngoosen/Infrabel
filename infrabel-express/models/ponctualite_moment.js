@@ -6,7 +6,7 @@ const PonctualiteMomentModel = {
             return conn.query("SELECT p.id_ponctualite_IC_moment, " +
                 "p.ponctualite_pourcentage, " +
                 "p.nb_train_inferieur_6_min, " +
-                "p.sec_de_retard, " +
+                "p.min_de_retard, " +
                 "d.id_date AS [Date], " + 
                 "a.nom_arret AS [Destination], " + 
                 "i.fr_instant AS [Moment de la journée], " + 
@@ -29,7 +29,7 @@ const PonctualiteMomentModel = {
             return conn.query("SELECT p.id_ponctualite_IC_moment, " +
                 "p.ponctualite_pourcentage, " +
                 "p.nb_train_inferieur_6_min, " +
-                "p.sec_de_retard, " +
+                "p.min_de_retard, " +
                 "d.id_date AS [Date], " + 
                 "a.nom_arret AS [Destination], " + 
                 "i.fr_instant AS [Moment de la journée], " + 
