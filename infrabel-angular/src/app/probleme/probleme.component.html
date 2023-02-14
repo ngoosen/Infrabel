@@ -1,4 +1,22 @@
-<h1>Page des problemes mais je sais plus ce qui faut mettre dedans</h1>
+<h1>Problèmes en gare</h1>
 
+<div class="container">
+    <div class="gare">
 
+      <p>Choisissez votre gare de départ ainsi que la gare de votre destination, appuyez ensuite sur "rechercher" afin de voir la poncualite de votre train.</p>
+
+      <mat-form-field>
+        <input type="text" placeholder="départ" aria-label="Recherche" matInput [formControl]="departControl" [matAutocomplete]="auto1">
+        <mat-autocomplete #auto1="matAutocomplete">
+          <mat-option *ngFor="let option of filterredOption |async" [value]="option">
+            {{ option | titlecase }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <button mat-raised-button  color="primary" (click)="getData()">Lancer la recherche</button>
+      <p *ngIf="showResult">Départ: {{ departControl.value | titlecase }}</p>
+
+    </div>
+  </div>
 

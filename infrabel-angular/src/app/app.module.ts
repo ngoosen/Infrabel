@@ -13,6 +13,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button';
 import { ProblemeComponent } from './probleme/probleme.component'
 import { HttpClientModule } from '@angular/common/http';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { HttpClientModule } from '@angular/common/http';
     ReactiveFormsModule,
     MatButtonModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    NgxChartsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

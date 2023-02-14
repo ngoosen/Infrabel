@@ -17,4 +17,8 @@ export class PonctualiteJ1Service {
   getOnePonctuality(id: number){
     return this._http.get<any>("http://localhost:3000/api/v1/ponctualite_J-1/" + id)
   }
+
+  getPonctualityByStop(stop: string){
+    return this._http.get<any>("http://localhost:3000/api/v1/ponctualite_J-1/" + stop.toUpperCase())
+  }
 }
