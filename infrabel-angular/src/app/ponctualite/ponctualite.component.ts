@@ -31,19 +31,18 @@ export class PonctualiteComponent implements OnInit {
 
     //filtre recherche
   ngOnInit(): void {
-    this.filterredOption=this.mycontrol.valueChanges.pipe(
-      startWith(''),
-      map(value=>this._filter(value))
-
-    )
-
     this._ligneArretService.getStops().subscribe( {
       next: (data) => {
-        let temptab = data[0]
+        let temptab = data
 
         for(let obj of temptab){
           this.options.push(obj.nom_arret)
+
         }
+        this.filterredOption=this.mycontrol.valueChanges.pipe(
+          startWith(''),
+          map(value=>this._filter(value))
+        )
       },
       error: (err) => {
         console.log("POUF " + err);
@@ -51,11 +50,12 @@ export class PonctualiteComponent implements OnInit {
     })
 
 
+
   }
 
     private _filter(value:string){
-    const filtervalue=value.toLowerCase()
-    return this.options.filter(option=>option.toLocaleLowerCase().includes(filtervalue))
+      const filtervalue=value.toLowerCase()
+      return this.options.filter(option=>option.toLocaleLowerCase().includes(filtervalue))
   }
 
   //

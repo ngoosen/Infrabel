@@ -8,7 +8,7 @@
         <input type="text" placeholder="départ" aria-label="Recherche" matInput [formControl]="departControl" [matAutocomplete]="auto1">
         <mat-autocomplete #auto1="matAutocomplete">
           <mat-option *ngFor="let option of filterredOption |async" [value]="option">
-            {{ option }}
+            {{ option | titlecase }}
           </mat-option>
         </mat-autocomplete>
       </mat-form-field>
@@ -17,7 +17,7 @@
         <input type="text" placeholder="arrivé" aria-label="Recherche" matInput [formControl]="arriveeControl " [matAutocomplete]="auto2">
         <mat-autocomplete #auto2="matAutocomplete">
           <mat-option *ngFor="let option of filterredOption |async" [value]="option">
-            {{ option }}
+            {{ option | titlecase }}
           </mat-option>
         </mat-autocomplete>
       </mat-form-field>
