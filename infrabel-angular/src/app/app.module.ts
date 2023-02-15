@@ -14,6 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { ProblemeComponent } from './probleme/probleme.component'
 import { HttpClientModule } from '@angular/common/http';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
+import {MatRadioModule} from '@angular/material/radio'
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
     MatButtonModule,
     HttpClientModule,
     FormsModule,
-    NgxChartsModule
+    NgxChartsModule,
+    MatRadioModule
   ],
   providers: [],
   bootstrap: [AppComponent]

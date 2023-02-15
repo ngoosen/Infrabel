@@ -1,13 +1,13 @@
 <h1>Poncualité des trains</h1>
-
 <div class="container">
     <div class="gare">
 
+      <!-- Description et champ de recherche de la gare d'arrivée -->
       <p>Choisissez votre gare de départ ainsi que la gare de votre destination, appuyez ensuite sur "rechercher" afin de voir la poncualite de votre train.</p>
       <mat-form-field>
         <input type="text" placeholder="départ" aria-label="Recherche" matInput [formControl]="departControl" [matAutocomplete]="auto1">
         <mat-autocomplete #auto1="matAutocomplete">
-          <mat-option *ngFor="let option of filterredOption |async" [value]="option">
+          <mat-option *ngFor="let option of filterredOption |async" [value]="option |titlecase">
             {{ option | titlecase }}
           </mat-option>
         </mat-autocomplete>
@@ -16,14 +16,31 @@
       <mat-form-field>
         <input type="text" placeholder="arrivé" aria-label="Recherche" matInput [formControl]="arriveeControl " [matAutocomplete]="auto2">
         <mat-autocomplete #auto2="matAutocomplete">
-          <mat-option *ngFor="let option of filterredOption |async" [value]="option">
+          <mat-option *ngFor="let option of filterredOption |async" [value]="option |titlecase">
             {{ option | titlecase }}
           </mat-option>
         </mat-autocomplete>
       </mat-form-field>
 
+      <!-- Bouton de recherche -->
       <button mat-raised-button  color="primary" (click)="showValues()">Lancer la recherche</button>
-      <p *ngIf="showResult">Départ: {{ departControl.value }} / Arrivée: {{ arriveeControl.value }}</p>
+      <!-- Résultats de la recherche -->
+      <div *ngIf="showResult">Départ: {{ departControl.value |titlecase}} / Arrivée: {{ arriveeControl.value |titlecase}}
+        <br>
+
+         <!-- bouton radio pour instant de la journée -->
+        <mat-radio-button  *ngFor="let item of instant"  [value]="item">
+          <option>{{item}}</option>
+        </mat-radio-button>
+
+
+
+
+
+        <!-- info général ( ligne -heure départ - arrivé - retard)
+      bouton pour choisir les instant(genre matin ou quoi) et donnée j-1  -->
+      <div>
+
 
 
     </div>
