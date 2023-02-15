@@ -3,10 +3,10 @@
 <div class="container">
     <div class="gare">
 
-      <p>Choisissez votre gare de départ ainsi que la gare de votre destination, appuyez ensuite sur "rechercher" afin de voir la poncualite de votre train.</p>
+      <p></p>
 
       <mat-form-field>
-        <input type="text" placeholder="départ" aria-label="Recherche" matInput [formControl]="departControl" [matAutocomplete]="auto1">
+        <input type="text" placeholder="Gare" aria-label="Recherche" matInput [formControl]="departControl" [matAutocomplete]="auto1">
         <mat-autocomplete #auto1="matAutocomplete">
           <mat-option *ngFor="let option of filterredOption |async" [value]="option">
             {{ option | titlecase }}
@@ -15,7 +15,20 @@
       </mat-form-field>
 
       <button mat-raised-button  color="primary" (click)="getData()">Lancer la recherche</button>
-      <p *ngIf="showResult">Départ: {{ departControl.value | titlecase }}</p>
+      <p *ngIf="showResult">
+        À {{ departControl.value | titlecase }}, les trains ont en moyenne {{averageDelayArrival}} secondes de retard à l'arrivée et
+        {{averageDelayArrival}} secondes de retard au départ.
+      </p>
+      <p>
+        Sur le dernier mois, il y a eu x incidents, engendrant x minutes de retard cumulées et x trains supprimés cumulés.
+        => graph lignes sur l'évolution des nb d'incidents, nb de trains supprimés et retards sur le mois
+      </p>
+      <p>Le plus gros retard ce mois-ci était de x minutes à cause de x incident et a provoqué la suppression de x trains.</p>
+      <p>L'incident le plus récent était x, ce qui a engendré x minutes de retard et x trains supprimés.</p>
+
+      <p>
+        Les relations dans lesquels se trouve l'arrêt sélectionné ont en moyenne x minutes de retard à l'arrivée et au départ.
+      </p>
 
     </div>
   </div>

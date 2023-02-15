@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {FormControl} from '@angular/forms'
 import { withPreloading } from '@angular/router';
-import { Observable} from 'rxjs';
+import { EMPTY, Observable} from 'rxjs';
 import { map,startWith } from 'rxjs';
 import { __values } from 'tslib';
 import { LigneArretService } from '../services/ligne-arret.service';
@@ -16,16 +16,17 @@ export class ProblemeComponent {
 
   constructor(private _ligneArretService: LigneArretService, private _ponctualiteService: PonctualiteJ1Service){}
 
-  options:string[]=[]
+  options : string[]=[]
 
-  mycontrol=new FormControl
+  mycontrol = new FormControl
 
-  filterredOption:Observable<string[]>
+  filterredOption : Observable<string[]> = EMPTY
 
   departControl = new FormControl();
-  showResult=false
+  showResult = false
 
-
+  averageDelayArrival: number = 0
+  averageDelayDeparture: number = 0
     //filtre recherche
   ngOnInit(): void {
     this._ligneArretService.getStops().subscribe( {
@@ -34,30 +35,38 @@ export class ProblemeComponent {
 
         for(let obj of temptab){
           this.options.push(obj.nom_arret)
-
         }
-        this.filterredOption=this.mycontrol.valueChanges.pipe(
+        this.filterredOption = this.mycontrol.valueChanges.pipe(
           startWith(''),
           map(value=>this._filter(value))
         )
       },
       error: (err) => {
-        console.log("POUF " + err);
+        console.log("Erreur: " + err);
       }
     })
   }
-
-    private _filter(value:string){
-      const filtervalue=value.toLowerCase()
-      return this.options.filter(option=>option.toLocaleLowerCase().includes(filtervalue))
+  private _filter(value:string){
+    const filtervalue=value.toLowerCase()
+    return this.options.filter(option=>option.toLocaleLowerCase().includes(filtervalue))
   }
   getData(){
     this.showResult = true
 
     this._ponctualiteService.getPonctualityByStop(this.departControl.value).subscribe({
       next: (data) => {
-        console.log(data);
-        console.log(this.departControl);
+        this.averageDelayArrival = 0
+        this.averageDelayDeparture = 0
+        let iterations = 0
+
+        for(let obj of data){
+          this.averageDelayArrival += obj.retard_arr
+          this.averageDelayDeparture += obj.retard_dep
+          iterations ++
+        }
+
+        this.averageDelayArrival = this.averageDelayArrival / iterations
+        this.averageDelayDeparture = this.averageDelayDeparture / iterations
       },
       error: (err) => {
         console.log("Erreur: " + err);
