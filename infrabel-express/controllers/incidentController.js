@@ -14,6 +14,13 @@ const IncidentController = {
         }).catch((err) => {
             res.status(400).json({message: "Bad Request!", error: err})
         })
+    },
+    getByPlace: (req, res) => {
+        IncidentModel.getByPlace((req.params.place).toUpperCase()).then((data) => {
+            res.status(200).json(data.recordset)
+        }).catch((err) => {
+            res.status(400).json({message: "Bad Request!", error: err})
+        })
     }
 }
 

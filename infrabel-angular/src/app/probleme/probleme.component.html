@@ -15,21 +15,36 @@
       </mat-form-field>
 
       <button mat-raised-button  color="primary" (click)="getData()">Lancer la recherche</button>
-      <p *ngIf="showResult">
-        À {{ departControl.value | titlecase }}, les trains ont en moyenne {{averageDelayArrival}} secondes de retard à l'arrivée et
-        {{averageDelayArrival}} secondes de retard au départ.
-      </p>
-      <p>
-        Sur le dernier mois, il y a eu x incidents, engendrant x minutes de retard cumulées et x trains supprimés cumulés.
-        => graph lignes sur l'évolution des nb d'incidents, nb de trains supprimés et retards sur le mois
-      </p>
-      <p>Le plus gros retard ce mois-ci était de x minutes à cause de x incident et a provoqué la suppression de x trains.</p>
-      <p>L'incident le plus récent était x, ce qui a engendré x minutes de retard et x trains supprimés.</p>
 
-      <p>
-        Les relations dans lesquels se trouve l'arrêt sélectionné ont en moyenne x minutes de retard à l'arrivée et au départ.
-      </p>
+      <div id="results" *ngIf="showResult">
+        <div id="onStation">
+          <p>
+            À {{ departControl.value | titlecase }}, les trains ont en moyenne
+            <span *ngIf="averageDelayArrivalInTime.hours > 0">{{averageDelayArrivalInTime.hours}} heures </span>
+            {{averageDelayArrivalInTime.minutes}} minutes
+            et {{averageDelayArrivalInTime.seconds}} secondes de retard à l'arrivée et
+            <span *ngIf="averageDelayDepartureInTime.hours > 0">{{averageDelayDepartureInTime.hours}} heures </span>
+            {{averageDelayDepartureInTime.minutes}} minutes et
+            {{averageDelayDepartureInTime.seconds}} secondes de retard au départ.
+          </p>
+          <p>
+            Sur le dernier mois, il y a eu x incidents, engendrant x minutes de retard cumulées et x trains supprimés cumulés.
+            => graph lignes sur l'évolution des nb d'incidents, nb de trains supprimés et retards sur le mois
+          </p>
+          <p>Le plus gros retard ce mois-ci était de x minutes à cause de x incident et a provoqué la suppression de x trains.</p>
+          <p>L'incident le plus récent était x, ce qui a engendré x minutes de retard et x trains supprimés.</p>
 
+          <p>- Voir les mêmes stats pour un mois sélectionné.</p>
+        </div>
+        <div id="onRelation">
+          <p>
+            Les relations dans lesquelles se trouve {{ departControl.value | titlecase }} ont en moyenne x minutes de retard à l'arrivée et au départ.
+          </p>
+          <p>
+            Les relations dans lesquelles se trouve {{ departControl.value | titlecase }} ont en moyenne x incidents, le plus récurrent étant x.
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 

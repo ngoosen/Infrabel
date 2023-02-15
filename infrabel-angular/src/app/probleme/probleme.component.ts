@@ -4,6 +4,8 @@ import { withPreloading } from '@angular/router';
 import { EMPTY, Observable} from 'rxjs';
 import { map,startWith } from 'rxjs';
 import { __values } from 'tslib';
+import { FormatDataService, TimeFormat } from '../services/format-data.service';
+import { IncidentService } from '../services/incident.service';
 import { LigneArretService } from '../services/ligne-arret.service';
 import { PonctualiteJ1Service } from '../services/ponctualite-j1.service';
 
@@ -14,19 +16,26 @@ import { PonctualiteJ1Service } from '../services/ponctualite-j1.service';
 })
 export class ProblemeComponent {
 
-  constructor(private _ligneArretService: LigneArretService, private _ponctualiteService: PonctualiteJ1Service){}
-
-  options : string[]=[]
+  constructor(
+    private _ligneArretService: LigneArretService,
+    private _ponctualiteService: PonctualiteJ1Service,
+    private _incidentService: IncidentService,
+    private _format : FormatDataService
+    ){}
 
   mycontrol = new FormControl
+  departControl = new FormControl();
 
+  options : string[]=[]
   filterredOption : Observable<string[]> = EMPTY
 
-  departControl = new FormControl();
   showResult = false
 
-  averageDelayArrival: number = 0
-  averageDelayDeparture: number = 0
+  averageDelayArrivalInSeconds: number = 0
+  averageDelayArrivalInTime: TimeFormat = {hours: 0, minutes: 0, seconds: 0}
+  averageDelayDepartureInSeconds: number = 0
+  averageDelayDepartureInTime: TimeFormat = {hours: 0, minutes: 0, seconds: 0}
+
     //filtre recherche
   ngOnInit(): void {
     this._ligneArretService.getStops().subscribe( {
@@ -50,23 +59,35 @@ export class ProblemeComponent {
     const filtervalue=value.toLowerCase()
     return this.options.filter(option=>option.toLocaleLowerCase().includes(filtervalue))
   }
-  getData(){
-    this.showResult = true
 
+  // Button onClick
+  getData(){
+    this.getAverageDelay()
+    this.getByPlace()
+    this.showResult = true
+  }
+
+  // Moyenne de retard / arrêt
+  getAverageDelay(){
     this._ponctualiteService.getPonctualityByStop(this.departControl.value).subscribe({
       next: (data) => {
-        this.averageDelayArrival = 0
-        this.averageDelayDeparture = 0
+        this.averageDelayArrivalInSeconds = 0
+        this.averageDelayDepartureInSeconds = 0
         let iterations = 0
 
+        // moyenne en secondes
         for(let obj of data){
-          this.averageDelayArrival += obj.retard_arr
-          this.averageDelayDeparture += obj.retard_dep
+          this.averageDelayArrivalInSeconds += obj.retard_arr
+          this.averageDelayDepartureInSeconds += obj.retard_dep
           iterations ++
         }
 
-        this.averageDelayArrival = this.averageDelayArrival / iterations
-        this.averageDelayDeparture = this.averageDelayDeparture / iterations
+        this.averageDelayArrivalInSeconds = this.averageDelayArrivalInSeconds / iterations
+        this.averageDelayDepartureInSeconds = this.averageDelayDepartureInSeconds / iterations
+
+        // formattage de la moyenne en heures, minutes et secondes
+        this.averageDelayArrivalInTime = this._format.formatTime(this.averageDelayArrivalInSeconds)
+        this.averageDelayDepartureInTime = this._format.formatTime(this.averageDelayDepartureInSeconds)
       },
       error: (err) => {
         console.log("Erreur: " + err);
@@ -74,4 +95,15 @@ export class ProblemeComponent {
     })
   }
 
+  // Incidents / arrêt
+  getByPlace(){
+    this._incidentService.getIncidentByPlace(this.departControl.value).subscribe({
+      next: (data) => {
+        console.log(data)
+      },
+      error: (err) => {
+        console.log("Erreur: " + err);
+      }
+    })
+  }
 }

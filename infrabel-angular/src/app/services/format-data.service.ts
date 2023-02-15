@@ -6,6 +6,24 @@ import { Injectable } from '@angular/core';
 export class FormatDataService {
 
   constructor() { }
+
+  // Formattage de secondes en heures, minutes et secondes
+  formatTime(seconds: number){
+    let leftOutSeconds = seconds % 60
+
+    let minutes = seconds - leftOutSeconds
+    minutes = minutes / 60
+    let leftOutMinutes = minutes % 60
+
+    minutes = minutes - leftOutMinutes
+    let hours = minutes / 60
+
+    return {
+      hours: hours,
+      minutes: leftOutMinutes,
+      seconds: leftOutSeconds
+    }
+  }
 }
 export interface DataFormat{
   name: string,
@@ -14,4 +32,9 @@ export interface DataFormat{
 export interface GroupedDataFormat{
   name: string,
   series: DataFormat[]
+}
+export interface TimeFormat{
+  hours: number,
+  minutes: number,
+  seconds: number
 }

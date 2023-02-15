@@ -17,4 +17,9 @@ export class IncidentService {
   getOneIncident(id: number){
     return this._http.get<any>("http://localhost:3000/api/v1/incidents/" + id)
   }
+
+  // Renvoie les incidents par lieu
+  getIncidentByPlace(place: string){
+    return this._http.get<any>("http://localhost:3000/api/v1/incidents/" + place.toUpperCase())
+  }
 }
