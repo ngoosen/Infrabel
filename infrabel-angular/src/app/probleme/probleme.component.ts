@@ -36,12 +36,26 @@ export class ProblemeComponent {
   averageDelayDepartureInSeconds: number = 0
   averageDelayDepartureInTime: TimeFormat = {hours: 0, minutes: 0, seconds: 0}
 
-  todaysDate : Date = new Date("2023-02-10")
+  todaysDate : Date = new Date("2023-02-01")
   nbIncident: number = 0
+  nbRetardTotal: number = 0
+  nbTrainsSuppTotal : number = 0
+
   incidentGraph : GroupedDataFormat[] = [
     {name: "Retard en secondes", series: []},
     {name: "Nombre de trains supprimés", series: []}
   ]
+
+  plusGrosRetard: number = 0
+  plusGrosTrainsSupp: number = 0
+  plusGrosIncident: string = ""
+
+  latestIncident: string = ""
+  latestDelay: number = 0
+  latestTrainsSupp: number = 0
+
+  relationArrivalAverage: number = 0
+  relationDepartureAverage: number = 0
 
     //filtre recherche
   ngOnInit(): void {
@@ -70,7 +84,9 @@ export class ProblemeComponent {
   // Button onClick
   getData(){
     this.getAverageDelay()
-    this.getByPlace()
+    this.getIncidentStats()
+    this.getLatestIncident()
+    this.getRelationAverage()
     this.showResult = true
   }
 
@@ -103,17 +119,20 @@ export class ProblemeComponent {
   }
 
   // Incidents / arrêt
-  getByPlace(){
+  getIncidentStats(){
+    this.nbIncident = 0
+    for(let item of this.incidentGraph){
+      item.series = []
+    }
+    this.nbRetardTotal = 0
+    this.nbTrainsSuppTotal = 0
+    this.plusGrosRetard = 0
+
     this._incidentService.getIncidentByPlace(this.departControl.value).subscribe({
       next: (data) => {
-        this.nbIncident = 0
-        for(let item of this.incidentGraph){
-          item.series = []
-        }
 
         for(let obj of data){
           let incidentDate = new Date(obj.date_incident)
-          console.log(incidentDate);
 
           // Si on est en janvier, il faut check pour décembre de l'année d'avant + les jours déjà écoulés en janvier
           if(this.todaysDate.getMonth() == 0){
@@ -133,12 +152,20 @@ export class ProblemeComponent {
                   value: obj.retard_secondes,
                   name: incidentDate.toString()
                 })
+              this.nbRetardTotal += obj.retard_secondes
+
               this.incidentGraph[1].series.push(
                 {
                   value: obj.nb_trains_supp,
                   name: incidentDate.toString()
-                }
-              )
+                })
+              this.nbTrainsSuppTotal += obj.nb_trains_supp
+
+              if(obj.retard_secondes > this.plusGrosRetard){
+                this.plusGrosRetard = obj.retard_secondes
+                this.plusGrosTrainsSupp = obj.nb_trains_supp
+                this.plusGrosIncident = obj.type_incident
+              }
             }
           }
           else{ // si c'est un autre mois, il faut check pour les jours déjà écoulés + ceux restants du mois passé
@@ -158,21 +185,82 @@ export class ProblemeComponent {
                   value: obj.retard_secondes,
                   name: incidentDate.toString()
                 })
+              this.nbRetardTotal += obj.retard_secondes
+
               this.incidentGraph[1].series.push(
                 {
                   value: obj.nb_trains_supp,
                   name: incidentDate.toString()
-                }
-              )
+                })
+              this.nbTrainsSuppTotal += obj.nb_trains_supp
+
+              if(obj.retard_secondes > this.plusGrosRetard){
+                this.plusGrosRetard = obj.retard_secondes
+                this.plusGrosTrainsSupp = obj.nb_trains_supp
+                this.plusGrosIncident = obj.type_incident
+              }
             }
           }
-          console.log(this.incidentGraph);
-
         }
-
       },
       error: (err) => {
         console.log("Erreur: " + err);
+      }
+    })
+  }
+
+  // Incident le plus récent
+  getLatestIncident(){
+    this._incidentService.getIncidentByPlace(this.departControl.value).subscribe({
+      next: (data) => {
+        let latestData = data.pop()
+
+        this.latestDelay = latestData.retard_secondes
+        this.latestTrainsSupp = latestData.nb_trains_supp
+        this.latestIncident = latestData.type_incident
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    })
+  }
+
+  getRelationAverage(){
+    let relationStats: any[] = []
+    let stopStats: any[] = []
+    let commonRelation = ""
+
+    this._ponctualiteService.getPonctualityByStop(this.departControl.value).subscribe({
+      next: (data) => {
+        commonRelation = data[0].relation.split(":", 1).toString()
+
+        for(let item of data){
+          stopStats.push(item)
+        }
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    })
+
+    this._ponctualiteService.getPonctuality().subscribe({
+      next: (data) => {
+        for(let item of data){
+          if(item.relation.split(":", 1) == commonRelation){
+            relationStats.push(item)
+          }
+        }
+        let iterations = 0
+        for(let item of relationStats){
+          this.relationArrivalAverage += item.retard_arr
+          this.relationDepartureAverage += item.retard_dep
+          iterations ++
+        }
+        this.relationArrivalAverage = this.relationArrivalAverage / iterations
+        this.relationDepartureAverage = this.relationDepartureAverage / iterations
+      },
+      error: (err) => {
+        console.log(err)
       }
     })
   }
