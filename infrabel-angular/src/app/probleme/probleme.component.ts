@@ -30,6 +30,7 @@ export class ProblemeComponent {
   filterredOption : Observable<string[]> = EMPTY
 
   showResult = false
+  showError = false
 
   averageDelayArrivalInSeconds: number = 0
   averageDelayArrivalInTime: TimeFormat = {hours: 0, minutes: 0, seconds: 0}
@@ -57,6 +58,8 @@ export class ProblemeComponent {
   relationArrivalAverage: number = 0
   relationDepartureAverage: number = 0
 
+  picker: any = EMPTY
+
     //filtre recherche
   ngOnInit(): void {
     this._ligneArretService.getStops().subscribe( {
@@ -83,6 +86,12 @@ export class ProblemeComponent {
 
   // Button onClick
   getData(){
+    if(this.departControl.value == undefined){
+      this.showError = true
+      setTimeout(() => {
+        this.showError = false
+      }, 3000)
+    }
     this.getAverageDelay()
     this.getIncidentStats()
     this.getLatestIncident()
@@ -226,6 +235,8 @@ export class ProblemeComponent {
   }
 
   getRelationAverage(){
+    this.relationArrivalAverage = 0
+    this.relationDepartureAverage = 0
     let relationStats: any[] = []
     let stopStats: any[] = []
     let commonRelation = ""

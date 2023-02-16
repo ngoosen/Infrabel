@@ -15,6 +15,8 @@ import { ProblemeComponent } from './probleme/probleme.component'
 import { HttpClientModule } from '@angular/common/http';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import {MatRadioModule} from '@angular/material/radio'
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker'
 
 @NgModule({
   declarations: [
@@ -36,7 +38,9 @@ import {MatRadioModule} from '@angular/material/radio'
     HttpClientModule,
     FormsModule,
     NgxChartsModule,
-    MatRadioModule
+    MatRadioModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
   providers: [],
   bootstrap: [AppComponent]

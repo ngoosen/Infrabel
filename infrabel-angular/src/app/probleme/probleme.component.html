@@ -3,8 +3,11 @@
 <div class="container">
     <div class="gare">
 
-      <p></p>
+      <div *ngIf="showError">
+        <p>Veuillez sélectionner une gare</p>
+      </div>
 
+      <!-- Sélection avec auto-complete -->
       <mat-form-field>
         <input type="text" placeholder="Gare" aria-label="Recherche" matInput [formControl]="departControl" [matAutocomplete]="auto1">
         <mat-autocomplete #auto1="matAutocomplete">
@@ -15,6 +18,16 @@
       </mat-form-field>
 
       <button mat-raised-button  color="primary" (click)="getData()">Lancer la recherche</button>
+
+      <!-- Sélection de date -->
+      <div>
+        <mat-form-field class="example-full-width" appearance="fill" (change)="getData()">
+          <mat-label>Changer de date</mat-label>
+          <input matInput [matDatepicker]="picker" [(ngModel)]="todaysDate">
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <button mat-raised-button (click)="picker.open()">Ouvrir le calendrier</button>
+      </div>
 
       <div id="results" *ngIf="showResult">
         <div id="onStation">
@@ -44,14 +57,10 @@
           <p>Le plus gros retard ce mois-ci était de {{plusGrosRetard}} minutes à cause de {{plusGrosIncident | lowercase}} et a provoqué la suppression de {{plusGrosTrainsSupp}} trains.</p>
           <p>L'incident le plus récent était {{latestIncident | lowercase}}, ce qui a engendré {{latestDelay}} minutes de retard et {{latestTrainsSupp}} trains supprimés.</p>
 
-          <ul>
-            <li>Voir les mêmes stats pour un mois sélectionné.</li>
-          </ul>
-
         </div>
         <div id="onRelation">
           <p>
-            Les relations dans lesquelles se trouve {{ departControl.value | titlecase }} ont en moyenne {{relationArrivalAverage}} minutes de retard à l'arrivée et {{relationDepartureAverage}} minutes de retard au départ.
+            Les relations dans lesquelles se trouve {{ departControl.value | titlecase }} ont en moyenne {{relationArrivalAverage}} secondes de retard à l'arrivée et {{relationDepartureAverage}} secondes de retard au départ.
           </p>
           <p>
             Les relations dans lesquelles se trouve {{ departControl.value | titlecase }} ont en moyenne x incidents, le plus récurrent étant x.
