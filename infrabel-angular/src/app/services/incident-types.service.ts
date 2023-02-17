@@ -28,3 +28,9 @@ export class IncidentTypesService {
     return this._http.get<any>("http://localhost:3000/api/v1/incident_types/" + id + "/" + language)
   }
 }
+export interface IncidentTypeData {
+  id_incident_type: number,
+  nl_incident_type: string,
+  fr_incident_type: string,
+  en_incident_type: string
+}

@@ -42,3 +42,14 @@ export class LigneArretService {
     return this._http.get<any>("http://localhost:3000/api/v1/ligne_arret/arret/" + id)
   }
 }
+export interface LigneArretData{
+  arret: string,
+  ligne: string
+}
+export interface LigneData{
+  id_ligne: number
+}
+export interface ArretData{
+  id_arret: number,
+  nom_arret: string
+}

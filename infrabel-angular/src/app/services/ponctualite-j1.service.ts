@@ -22,3 +22,17 @@ export class PonctualiteJ1Service {
     return this._http.get<any>("http://localhost:3000/api/v1/ponctualite_J-1/" + stop.toUpperCase())
   }
 }
+export interface PonctualiteJ1Data{
+  id_trajet: number,
+  arr_reel: Date,
+  arr_prev: Date,
+  dep_reel: Date,
+  dep_prev: Date,
+  retard_arr: number,
+  retard_dep: number,
+  relation: string,
+  ligne_dep: string,
+  ligne_arr: string,
+  num_train: number,
+  arret: string
+}

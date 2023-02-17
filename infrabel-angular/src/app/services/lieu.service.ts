@@ -28,3 +28,9 @@ export class LieuService {
     return this._http.get<any>("http://localhost:3000/api/v1/lieux/" + id + "/" + language)
   }
 }
+export interface LieuData{
+  id_lieu: number,
+  nl_lieu: string,
+  fr_lieu: string,
+  en_lieu: string
+}

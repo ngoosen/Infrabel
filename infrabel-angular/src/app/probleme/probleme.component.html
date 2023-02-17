@@ -41,21 +41,21 @@
             {{averageDelayDepartureInTime.seconds}} secondes de retard au départ.
           </p>
           <p>
-            Sur le dernier mois, il y a eu {{nbIncident}} incidents, engendrant {{nbRetardTotal}} minutes de retard cumulées et {{nbTrainsSuppTotal}} trains supprimés cumulés.
+            Sur le dernier mois, il y a eu {{nbIncident}} incidents, engendrant {{nbRetardTotal}} secondes de retard cumulées et {{nbTrainsSuppTotal}} trains supprimés cumulés.
             => graph lignes sur l'évolution des nb d'incidents, nb de trains supprimés et retards sur le mois
           </p>
           <div>
-            <!-- <ngx-charts-line-chart
+            <ngx-charts-line-chart
               [results]="incidentGraph"
               [legend]="true"
               [xAxis]="true"
               [yAxis]="true"
             >
-            </ngx-charts-line-chart> -->
+            </ngx-charts-line-chart>
           </div>
 
-          <p>Le plus gros retard ce mois-ci était de {{plusGrosRetard}} minutes à cause de {{plusGrosIncident | lowercase}} et a provoqué la suppression de {{plusGrosTrainsSupp}} trains.</p>
-          <p>L'incident le plus récent était {{latestIncident | lowercase}}, ce qui a engendré {{latestDelay}} minutes de retard et {{latestTrainsSupp}} trains supprimés.</p>
+          <p>Le plus gros retard ce mois-ci était de {{plusGrosRetard}} secondes à cause de {{plusGrosIncident | lowercase}} et a provoqué la suppression de {{plusGrosTrainsSupp}} trains.</p>
+          <p>L'incident le plus récent était {{latestIncident | lowercase}}, ce qui a engendré {{latestDelay}} secondes de retard et {{latestTrainsSupp}} trains supprimés.</p>
 
         </div>
         <div id="onRelation">

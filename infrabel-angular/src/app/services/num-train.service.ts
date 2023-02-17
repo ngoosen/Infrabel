@@ -18,3 +18,10 @@ export class NumTrainService {
     return this._http.get<any>("http://localhost:3000/api/v1/num_train/" + id)
   }
 }
+export interface NumTrainData{
+  id_num_train: number,
+  num_train: number,
+  date: Date,
+  instant: string,
+  relation: string
+}

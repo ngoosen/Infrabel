@@ -18,3 +18,13 @@ export class PonctualiteMomentService {
     return this._http.get<any>("http://localhost:3000/api/v1/ponctualite_des_relations_IC_par_moment/" + id)
   }
 }
+export interface PonctualiteMomentData{
+  id_ponctualite_IC_moment: number,
+  ponctualite_pourcentage: number,
+  nb_train_inferieur_6_min: number,
+  min_de_retard: number,
+  date: Date,
+  destination: string,
+  instant: string,
+  relation: string
+}

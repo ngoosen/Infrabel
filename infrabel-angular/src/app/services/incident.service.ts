@@ -23,3 +23,12 @@ export class IncidentService {
     return this._http.get<any>("http://localhost:3000/api/v1/incidents/" + place.toUpperCase())
   }
 }
+export interface IncidentData{
+  id_incident: number,
+  retard_secondes: number,
+  nb_trains_supp: number,
+  lieu: string,
+  type_incident: string,
+  date_incident: Date,
+  ligne: string
+}

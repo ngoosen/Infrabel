@@ -18,3 +18,9 @@ export class RelationService {
     return this._http.get<any>("http://localhost:3000/api/v1/relations/" + id)
   }
 }
+export interface RelationData{
+  id_relation: number,
+  code_relation: string,
+  gare1: string,
+  gare2: string
+}

@@ -30,3 +30,9 @@ export class InstantService {
     return this._http.get<any>("http://localhost:3000/api/v1/instants/" + id + "/" + language)
   }
 }
+export interface InstantData{
+  id_instant: number,
+  nl_instant: string,
+  fr_instant: string,
+  en_instant: string
+}
