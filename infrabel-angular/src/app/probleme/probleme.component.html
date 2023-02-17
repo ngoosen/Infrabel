@@ -1,72 +1,127 @@
 <h1>Problèmes en gare</h1>
 
 <div class="container">
-    <div class="gare">
 
-      <div *ngIf="showError">
-        <p>Veuillez sélectionner une gare</p>
-      </div>
+  <div class="searchField">
+    <div class="toastError" *ngIf="showError">
+      <p>Veuillez sélectionner une gare</p>
+    </div>
 
-      <!-- Sélection avec auto-complete -->
-      <mat-form-field>
-        <input type="text" placeholder="Gare" aria-label="Recherche" matInput [formControl]="departControl" [matAutocomplete]="auto1">
-        <mat-autocomplete #auto1="matAutocomplete">
-          <mat-option *ngFor="let option of filterredOption |async" [value]="option">
-            {{ option | titlecase }}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
+    <!-- Sélection de gare avec auto-complete -->
+    <div class="station-search">
+      <div id="station-input">
+        <mat-form-field>
+          <input type="text" placeholder="Gare" aria-label="Recherche" matInput [formControl]="departControl" [matAutocomplete]="auto1">
 
-      <button mat-raised-button  color="primary" (click)="getData()">Lancer la recherche</button>
-
-      <!-- Sélection de date -->
-      <div>
-        <mat-form-field class="example-full-width" appearance="fill" (change)="getData()">
-          <mat-label>Changer de date</mat-label>
-          <input matInput [matDatepicker]="picker" [(ngModel)]="todaysDate">
-          <mat-datepicker #picker></mat-datepicker>
+          <mat-autocomplete #auto1="matAutocomplete">
+            <mat-option *ngFor="let option of filterredOption |async" [value]="option">
+              {{ option | titlecase }}
+            </mat-option>
+          </mat-autocomplete>
         </mat-form-field>
-        <button mat-raised-button (click)="picker.open()">Ouvrir le calendrier</button>
       </div>
+      <div id="station-button">
+        <button mat-raised-button color="primary" (click)="getData()">
+          <p>Lancer la recherche</p>
+        </button>
+      </div>
+    </div>
 
-      <div id="results" *ngIf="showResult">
-        <div id="onStation">
+    <!-- Sélection de date -->
+    <div class="date-picker">
+      <mat-form-field class="example-full-width" appearance="fill" (change)="getData()">
+        <mat-label>Choisir une autre date</mat-label>
+        <input matInput [matDatepicker]="picker" [(ngModel)]="todaysDate" (click)="picker.open()">
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="results" *ngIf="showResult">
+    <h2>La situation à {{ departControl.value | titlecase }}</h2>
+
+    <div id="byStation">
+
+      <article id="average-delay">
+        <h3>À {{ departControl.value | titlecase }}, les trains ont en moyenne</h3>
+        <section>
           <p>
-            À {{ departControl.value | titlecase }}, les trains ont en moyenne
             <span *ngIf="averageDelayArrivalInTime.hours > 0">{{averageDelayArrivalInTime.hours}} heures </span>
             {{averageDelayArrivalInTime.minutes}} minutes
-            et {{averageDelayArrivalInTime.seconds}} secondes de retard à l'arrivée et
+            et {{averageDelayArrivalInTime.seconds}} secondes de retard à l'arrivée
+          </p>
+        </section>
+        <section>
+          <p>
             <span *ngIf="averageDelayDepartureInTime.hours > 0">{{averageDelayDepartureInTime.hours}} heures </span>
             {{averageDelayDepartureInTime.minutes}} minutes et
             {{averageDelayDepartureInTime.seconds}} secondes de retard au départ.
           </p>
-          <p>
-            Sur le dernier mois, il y a eu {{nbIncident}} incidents, engendrant {{nbRetardTotal}} secondes de retard cumulées et {{nbTrainsSuppTotal}} trains supprimés cumulés.
-            => graph lignes sur l'évolution des nb d'incidents, nb de trains supprimés et retards sur le mois
-          </p>
-          <div>
-            <ngx-charts-line-chart
-              [results]="incidentGraph"
-              [legend]="true"
-              [xAxis]="true"
-              [yAxis]="true"
-            >
-            </ngx-charts-line-chart>
-          </div>
+        </section>
+      </article>
 
-          <p>Le plus gros retard ce mois-ci était de {{plusGrosRetard}} secondes à cause de {{plusGrosIncident | lowercase}} et a provoqué la suppression de {{plusGrosTrainsSupp}} trains.</p>
-          <p>L'incident le plus récent était {{latestIncident | lowercase}}, ce qui a engendré {{latestDelay}} secondes de retard et {{latestTrainsSupp}} trains supprimés.</p>
+      <article id="monthly-incident-stats">
+        <p>
+          Sur le dernier mois, il y a eu {{nbIncident}} incidents, engendrant {{nbRetardTotal}} secondes de retard cumulées et {{nbTrainsSuppTotal}} trains supprimés cumulés.
+          => graph lignes sur l'évolution des nb d'incidents, nb de trains supprimés et retards sur le mois
+        </p>
 
+        <div>
+          <ngx-charts-line-chart
+            [results]="incidentGraph"
+            [legend]="true"
+            [xAxis]="true"
+            [yAxis]="true"
+          >
+          </ngx-charts-line-chart>
         </div>
-        <div id="onRelation">
+      </article>
+
+      <article id="global-incident-stats">
+        <section>
           <p>
-            Les relations dans lesquelles se trouve {{ departControl.value | titlecase }} ont en moyenne {{relationArrivalAverage}} secondes de retard à l'arrivée et {{relationDepartureAverage}} secondes de retard au départ.
+            Le plus gros retard ce mois-ci était de {{plusGrosRetard}} secondes
+            à cause de {{plusGrosIncident | lowercase}}
+            et a provoqué la suppression de {{plusGrosTrainsSupp}} trains.
+          </p>
+        </section>
+
+        <section>
+          <p>
+            L'incident le plus récent était {{latestIncident | lowercase}},
+            ce qui a engendré {{latestDelay}} secondes de retard
+            et {{latestTrainsSupp}} trains supprimés.
+          </p>
+        </section>
+
+        <section>
+          <p>
+            graph donut avec les différents types d'incident à l'arrêt sélectionné / nb d'incidents
           </p>
           <p>
-            Les relations dans lesquelles se trouve {{ departControl.value | titlecase }} ont en moyenne x incidents, le plus récurrent étant x.
+            graph ligne types d'incident / retard et trains supp
           </p>
-        </div>
-      </div>
+        </section>
+      </article>
+
     </div>
+
+    <div id="byRelation">
+      <article>
+        <p>
+          Les relations dans lesquelles se trouve {{ departControl.value | titlecase }} ont en moyenne {{relationArrivalAverage}} secondes de retard à l'arrivée et {{relationDepartureAverage}} secondes de retard au départ.
+        </p>
+      </article>
+      <article>
+        <p>
+          Les relations dans lesquelles se trouve {{ departControl.value | titlecase }} ont en moyenne x incidents, le plus récurrent étant x.
+        </p>
+      </article>
+    </div>
+
   </div>
+
+</div>
 

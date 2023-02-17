@@ -1,8 +1,69 @@
-#onStation{
-  background-color: bisque
+h1{
+  text-align: center;
 }
-#onRelation{
-  background-color: lightgray
+//////////////////// SEARCH FIELD ////////////////////////
+.searchField{
+  display: flex;
+  flex-direction: column;
+}
+.station-search{
+  justify-content: baseline;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+}
+#station-input{
+  justify-content: baseline;
+  text-align: center;
+}
+#station-input input{
+  text-align: center;
+}
+.station-search mat-form-field{
+  width: 35%;
+}
+#station-button{
+  justify-content: end;
+  text-align: center;
+}
+.station-search button{
+  width: 20%;
+  height: 3em;
+}
+.station-search button p {
+  font-size: 16px;
+}
+.date-picker{
+  justify-content: end;
+  padding: 10px 0;
+  text-align: center;
+}
+//////////////////// RESULTS FIELD ////////////////////////
+.results{
+  display: flex;
+  flex-direction: column;
 }
 
-@import '../../styles.scss';
+#byStation{
+  background-color: lightcyan;
+  justify-content: baseline;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#average-delay{
+  background-color: antiquewhite;
+  width: 40%;
+  align-items: flex-start;
+  text-align: center;
+}
+#monthly-incident-stats{ // <= graph is here
+  background-color: aquamarine;
+  width: 60%;
+  align-items: flex-start;
+}
+#global-incident-stats{
+  background-color: lightsalmon;
+  width: 100%;
+  align-items: flex-end;
+}

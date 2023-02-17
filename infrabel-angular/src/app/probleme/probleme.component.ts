@@ -5,7 +5,7 @@ import { EMPTY, Observable} from 'rxjs';
 import { map,startWith } from 'rxjs';
 import { __values } from 'tslib';
 import { FormatDataService, GroupedDataFormat, TimeFormat } from '../services/format-data.service';
-import { IncidentService } from '../services/incident.service';
+import { IncidentData, IncidentService } from '../services/incident.service';
 import { LigneArretService } from '../services/ligne-arret.service';
 import { PonctualiteJ1Service } from '../services/ponctualite-j1.service';
 
@@ -138,7 +138,7 @@ export class ProblemeComponent {
     this.plusGrosRetard = 0
 
     this._incidentService.getIncidentByPlace(this.departControl.value).subscribe({
-      next: (data) => {
+      next: (data : IncidentData[]) => {
 
         for(let obj of data){
           let incidentDate = new Date(obj.date_incident)
