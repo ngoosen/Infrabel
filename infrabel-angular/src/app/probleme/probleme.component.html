@@ -29,9 +29,9 @@
 
     <!-- Sélection de date -->
     <div class="date-picker">
-      <mat-form-field class="example-full-width" appearance="fill" (change)="getData()">
+      <mat-form-field class="example-full-width" appearance="fill">
         <mat-label>Choisir une autre date</mat-label>
-        <input matInput [matDatepicker]="picker" [(ngModel)]="todaysDate" (click)="picker.open()">
+        <input matInput [matDatepicker]="picker" [(ngModel)]="todaysDate" (click)="picker.open()" (ngModelChange)="getData()">
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
     </div>
@@ -46,31 +46,38 @@
 
       <article id="average-delay">
         <h3>À {{ departControl.value | titlecase }}, les trains ont en moyenne</h3>
-        <section>
+        <section class="card">
           <p>
             <span *ngIf="averageDelayArrivalInTime.hours > 0">{{averageDelayArrivalInTime.hours}} heures </span>
             {{averageDelayArrivalInTime.minutes}} minutes
-            et {{averageDelayArrivalInTime.seconds}} secondes de retard à l'arrivée
+            et {{averageDelayArrivalInTime.seconds}} secondes
+          </p>
+          <p>
+            de retard à l'arrivée
           </p>
         </section>
-        <section>
+        <section class="card">
           <p>
             <span *ngIf="averageDelayDepartureInTime.hours > 0">{{averageDelayDepartureInTime.hours}} heures </span>
             {{averageDelayDepartureInTime.minutes}} minutes et
-            {{averageDelayDepartureInTime.seconds}} secondes de retard au départ.
+            {{averageDelayDepartureInTime.seconds}} secondes
+          </p>
+          <p>
+            de retard au départ.
           </p>
         </section>
       </article>
 
       <article id="monthly-incident-stats">
         <p>
-          Sur le dernier mois, il y a eu {{nbIncident}} incidents, engendrant {{nbRetardTotal}} secondes de retard cumulées et {{nbTrainsSuppTotal}} trains supprimés cumulés.
-          => graph lignes sur l'évolution des nb d'incidents, nb de trains supprimés et retards sur le mois
+          Durant le mois de {{todaysDate.toLocaleDateString("fr-FR", {month: "long"})}}, il est survenu <span class="bold">{{nbIncident}} incidents</span>,
+          engendrant <span class="bold"><span *ngIf="retardTotalTime.hours > 0">{{retardTotalTime.hours}} heures, </span>{{retardTotalTime.minutes}} minutes et {{retardTotalTime.seconds}} secondes de retard</span> cumulées et
+          <span class="bold">{{nbTrainsSuppTotal}} trains supprimés</span> cumulés.
         </p>
 
         <div>
           <ngx-charts-line-chart
-            [results]="incidentGraph"
+            [results]="monthlyDelayLineGraph"
             [legend]="true"
             [xAxis]="true"
             [yAxis]="true"
@@ -82,7 +89,7 @@
       <article id="global-incident-stats">
         <section>
           <p>
-            Le plus gros retard ce mois-ci était de {{plusGrosRetard}} secondes
+            Le plus gros retard ce mois-ci était de <span *ngIf="plusGrosRetardTime.hours > 0">{{plusGrosRetardTime.hours}} heures, </span>{{plusGrosRetardTime.minutes}} minutes et {{plusGrosRetardTime.seconds}} secondes
             à cause de {{plusGrosIncident | lowercase}}
             et a provoqué la suppression de {{plusGrosTrainsSupp}} trains.
           </p>
@@ -91,12 +98,16 @@
         <section>
           <p>
             L'incident le plus récent était {{latestIncident | lowercase}},
-            ce qui a engendré {{latestDelay}} secondes de retard
+            ce qui a engendré <span *ngIf="latestDelayTime.hours > 0">{{latestDelayTime.hours}} heures, </span>{{latestDelayTime.minutes}} minutes et {{latestDelayTime.seconds}} secondes de retard
             et {{latestTrainsSupp}} trains supprimés.
           </p>
         </section>
 
         <section>
+          <ngx-charts-pie-chart
+          [results]="incidentPieGraph"
+          >
+          </ngx-charts-pie-chart>
           <p>
             graph donut avec les différents types d'incident à l'arrêt sélectionné / nb d'incidents => clic sur le type pour montrer le retard/trains supp par incident
           </p>
