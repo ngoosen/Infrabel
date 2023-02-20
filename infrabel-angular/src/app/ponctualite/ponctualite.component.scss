@@ -1,6 +1,6 @@
 .container{
     display: flex;
-  
+
 }
 
 .gare{
@@ -9,7 +9,7 @@
     flex-direction: column;
     margin-left: 35% ;
     width: 30%;
-    
+
 }
 
 .recherche{
@@ -17,8 +17,22 @@
     flex-direction: column;
     width: 25%;
     margin-left: 35%;
-    
+
 }
+.instant{
+  display: flex;
+  flex-direction: row;
+}
+
+.result1{
+  display: flex;
+  flex-direction: column;
+  text-align: start;
+
+
+}
+
+
 
 h1{
     display: flex;
@@ -26,3 +40,5 @@ h1{
     flex-direction: row;
     margin: 25px auto;
 }
+
+
