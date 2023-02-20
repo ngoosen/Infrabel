@@ -14,6 +14,13 @@ const PonctualiteMomentController = {
         }).catch((err) => {
             res.status(400).json({message: "Bad Request!", error: err})
         })
+    },
+    getByStop: (req, res) => {
+        PonctualiteMomentModel.getByStop((req.params.stop).toUpperCase()).then((data) => {
+            res.status(200).json(data.recordset)
+        }).catch((err) => {
+            res.status(400).json({message: "Bad Request!", error: err})
+        })
     }
 }
 module.exports = PonctualiteMomentController
