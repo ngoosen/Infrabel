@@ -1,8 +1,7 @@
 <h1>Poncualité des trains</h1>
 <div class="container">
     <div class="gare">
-
-      <!-- Description et champ de recherche de la gare d'arrivée -->
+          <!-- Description et champ de recherche de la gare d'arrivée -->
       <p>Choisissez votre gare de départ ainsi que la gare de votre destination, appuyez ensuite sur "rechercher" afin de voir la poncualite de votre train.</p>
       <mat-form-field>
         <input type="text" placeholder="départ" aria-label="Recherche" matInput [formControl]="departControl" [matAutocomplete]="auto1">
@@ -23,23 +22,33 @@
       </mat-form-field>
 
       <!-- Bouton de recherche -->
-      <button mat-raised-button  color="primary" (click)="showValues()">Lancer la recherche</button>
-      <!-- Résultats de la recherche -->
-      <div *ngIf="showResult">Départ: {{ departControl.value |titlecase}} / Arrivée: {{ arriveeControl.value |titlecase}}
-        <br>
+      <button mat-raised-button  color="primary" (click)="showValues()"  [disabled]="!areInputsValid()">Lancer la recherche</button>
 
+          <!-- ce qui apparait apres avoir appuier sur le bouton  -->
+        <div *ngIf="showResult">
+        <div class="instant">
          <!-- bouton radio pour instant de la journée -->
         <mat-radio-button  *ngFor="let item of instant"  [value]="item">
           <option>{{item}}</option>
         </mat-radio-button>
+      </div >
+      <div class="result1" >
+        <p>
+          <h3>Poncualité de la veille</h3>
+        Gare départ: {{ departControl.value |titlecase }}.<br>
+        Gare Arriver: {{arriveeControl.value |titlecase}}<br>
+        poucentage d'arriver a l heure: {{ponctualite[1]}}%. <br>
+        départ : {{HeureD}}.<br>
+        arriver : {{HeureA}}.<br>
+        Retard  au départ: {{retardD}}.<br>
+        Retard a l'arriver: {{retardA}}.<br>
+       <p>
 
-
-
-
+       </div>
 
         <!-- info général ( ligne -heure départ - arrivé - retard)
       bouton pour choisir les instant(genre matin ou quoi) et donnée j-1  -->
-      <div>
+
 
 
 
