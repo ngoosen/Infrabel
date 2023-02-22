@@ -6,16 +6,16 @@
       <mat-form-field>
         <input type="text" placeholder="départ" aria-label="Recherche" matInput [formControl]="departControl" [matAutocomplete]="auto1">
         <mat-autocomplete #auto1="matAutocomplete">
-          <mat-option *ngFor="let option of filterredOption |async" [value]="option |titlecase">
+          <mat-option *ngFor="let option of filterredOptionDepart |async" [value]="option |titlecase">
             {{ option | titlecase }}
           </mat-option>
         </mat-autocomplete>
       </mat-form-field>
 
       <mat-form-field>
-        <input type="text" placeholder="arrivé" aria-label="Recherche" matInput [formControl]="arriveeControl " [matAutocomplete]="auto2">
+        <input type="text" placeholder="arrivé" aria-label="Recherche" matInput [formControl]="arriveeControl" [matAutocomplete]="auto2">
         <mat-autocomplete #auto2="matAutocomplete">
-          <mat-option *ngFor="let option of filterredOption |async" [value]="option |titlecase">
+          <mat-option *ngFor="let option of filterredOptionArrive |async" [value]="option |titlecase">
             {{ option | titlecase }}
           </mat-option>
         </mat-autocomplete>
@@ -37,11 +37,13 @@
           <h3>Poncualité de la veille</h3>
         Gare départ: {{ departControl.value |titlecase }}.<br>
         Gare Arriver: {{arriveeControl.value |titlecase}}<br>
-        poucentage d'arriver a l heure: {{ponctualite[1]}}%. <br>
-        départ : {{HeureD}}.<br>
-        arriver : {{HeureA}}.<br>
-        Retard  au départ: {{retardD}}.<br>
-        Retard a l'arriver: {{retardA}}.<br>
+        Chance que le train arrive a l heure {{ponctualite}} %<br>
+        Date : {{dateponct |date:'EEEE dd MMMM yyyy'}}.<br>
+        retard du train : {{retard}} minutes<br>
+
+
+
+
        <p>
 
        </div>
