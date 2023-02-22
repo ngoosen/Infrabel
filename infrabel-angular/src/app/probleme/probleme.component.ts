@@ -76,7 +76,7 @@ export class ProblemeComponent {
         for(let obj of temptab){
           this.options.push(obj.nom_arret)
         }
-        this.filterredOption = this.mycontrol.valueChanges.pipe(
+        this.filterredOption = this.departControl.valueChanges.pipe(
           startWith(''),
           map(value=>this._filter(value))
         )
