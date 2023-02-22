@@ -76,7 +76,7 @@
         </p>
 
         <div>
-          <ngx-charts-line-chart
+          <ngx-charts-line-chart *ngIf="monthlyDelayLineGraph.length > 0"
             [results]="monthlyDelayLineGraph"
             [legend]="true"
             [xAxis]="true"
@@ -104,10 +104,14 @@
         </section>
 
         <section>
-          <ngx-charts-pie-chart
-          [results]="incidentPieGraph"
-          >
+          <div id="pieChart" *ngIf="incidentPieGraph.length > 0">
+            <ngx-charts-pie-chart
+            [results]="incidentPieGraph"
+            [labels]="true"
+            (select)="onSelect($event)"
+            >
           </ngx-charts-pie-chart>
+        </div>
           <p>
             graph donut avec les différents types d'incident à l'arrêt sélectionné / nb d'incidents => clic sur le type pour montrer le retard/trains supp par incident
           </p>

@@ -25,7 +25,7 @@ export class IncidentService {
 }
 export interface IncidentData{
   id_incident: number,
-  retard_secondes: number,
+  retard_minutes: number,
   nb_trains_supp: number,
   lieu: string,
   type_incident: string,

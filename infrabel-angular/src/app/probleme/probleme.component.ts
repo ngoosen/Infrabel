@@ -8,7 +8,7 @@ import { DataFormat, FormatDataService, GroupedDataFormat, TimeFormat } from '..
 import { IncidentData, IncidentService } from '../services/incident.service';
 import { LigneArretService } from '../services/ligne-arret.service';
 import { PonctualiteJ1Service } from '../services/ponctualite-j1.service';
-import { data } from './fakedb';
+import { data, pieChartIncidentTypes } from './fakedb';
 
 @Component({
   selector: 'app-probleme',
@@ -60,6 +60,7 @@ export class ProblemeComponent {
   latestDelayTime: TimeFormat = {hours: 0, minutes: 0, seconds: 0}
 
   incidentPieGraph: DataFormat[] = []
+  overallIncidentsBarGraph: DataFormat[] = []
 
   relationArrivalAverage: number = 0
   relationDepartureAverage: number = 0
@@ -165,10 +166,10 @@ export class ProblemeComponent {
               this.nbIncident++
               this.monthlyDelayLineGraph[0].series.push(
                 {
-                  value: obj.retard_secondes,
+                  value: obj.retard_minutes,
                   name: incidentDate.toString()
                 })
-              this.nbRetardTotal += obj.retard_secondes
+              this.nbRetardTotal += obj.retard_minutes
 
               this.monthlyDelayLineGraph[1].series.push(
                 {
@@ -177,8 +178,8 @@ export class ProblemeComponent {
                 })
               this.nbTrainsSuppTotal += obj.nb_trains_supp
 
-              if(obj.retard_secondes > this.plusGrosRetard){
-                this.plusGrosRetard = obj.retard_secondes
+              if(obj.retard_minutes > this.plusGrosRetard){
+                this.plusGrosRetard = obj.retard_minutes
                 this.plusGrosTrainsSupp = obj.nb_trains_supp
                 this.plusGrosIncident = obj.type_incident
               }
@@ -198,10 +199,10 @@ export class ProblemeComponent {
               this.nbIncident++
               this.monthlyDelayLineGraph[0].series.push(
                 {
-                  value: obj.retard_secondes,
+                  value: obj.retard_minutes,
                   name: incidentDate.toString()
                 })
-              this.nbRetardTotal += obj.retard_secondes
+              this.nbRetardTotal += obj.retard_minutes
 
               this.monthlyDelayLineGraph[1].series.push(
                 {
@@ -210,8 +211,8 @@ export class ProblemeComponent {
                 })
               this.nbTrainsSuppTotal += obj.nb_trains_supp
 
-              if(obj.retard_secondes > this.plusGrosRetard){
-                this.plusGrosRetard = obj.retard_secondes
+              if(obj.retard_minutes > this.plusGrosRetard){
+                this.plusGrosRetard = obj.retard_minutes
                 this.plusGrosTrainsSupp = obj.nb_trains_supp
                 this.plusGrosIncident = obj.type_incident
               }
@@ -222,28 +223,24 @@ export class ProblemeComponent {
           this.plusGrosRetardTime = this._format.formatTime(this.plusGrosRetard)
         }
 
+        // Faire en sorte de remplir le pie chart qui reprend les différents types d'incidents par nb dudit type d'incident
         for(let item of data){
-          // Faire en sorte de remplir le pie chart qui reprend les différents types d'incidents par nb dudit type d'incident
+          let incidentIsInGraph = this.incidentPieGraph.find(inc => inc.name == item.type_incident)
 
-          if(this.incidentPieGraph[0] == undefined){
-            this.incidentPieGraph.push({
-              name: item.type_incident,
-              value: 1
-            })
-          }
-
-          for(let incident of this.incidentPieGraph){
-            if(incident.name == item.type_incident){
-              incident.value++
-            }
-            else{
-              this.incidentPieGraph.push({
+          if(incidentIsInGraph == undefined){
+            this.incidentPieGraph.push(
+              {
                 name: item.type_incident,
                 value: 1
-              })
-            }
+              }
+            )
+          }
+          else{
+            incidentIsInGraph.value++
           }
         }
+        console.log(this.incidentPieGraph);
+
       },
       error: (err) => {
         console.log("Erreur: " + err);
@@ -257,7 +254,7 @@ export class ProblemeComponent {
       next: (data: IncidentData[]) => {
         let latestData = data.pop()
 
-        this.latestDelay = latestData!.retard_secondes
+        this.latestDelay = latestData!.retard_minutes
         this.latestTrainsSupp = latestData!.nb_trains_supp
         this.latestIncident = latestData!.type_incident
         this.latestDelayTime = this._format.formatTime(this.latestDelay)
@@ -307,6 +304,24 @@ export class ProblemeComponent {
       },
       error: (err) => {
         console.log(err)
+      }
+    })
+  }
+
+  onSelect(incident: DataFormat){
+    this._incidentService.getIncidents().subscribe({
+      next: (data: IncidentData[]) => {
+        for(let item of data){
+          if(incident.name == item.type_incident){
+            this.overallIncidentsBarGraph.push({
+              name: item.date_incident.toDateString(),
+              value: item.retard_minutes
+            })
+          }
+        }
+      },
+      error: (err) => {
+        console.log("Erreur: " + err);
       }
     })
   }

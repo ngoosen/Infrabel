@@ -1,4 +1,4 @@
-import { GroupedDataFormat } from "../services/format-data.service";
+import { DataFormat, GroupedDataFormat } from "../services/format-data.service";
 
 export let data: GroupedDataFormat[] = [
 {
@@ -73,4 +73,11 @@ export let data: GroupedDataFormat[] = [
     {name: "31/01", value: 68}
   ]
 }
+]
+export let pieChartIncidentTypes: DataFormat[] = [
+  {name: "Heurt d'une personne", value: 12},
+  {name: "Vol de câbles", value: 84},
+  {name: "Intrusion dans les voies", value: 34},
+  {name: "Catastrophes naturelles", value: 45},
+  {name: "La dev en PLS sur le code", value: 174}
 ]
