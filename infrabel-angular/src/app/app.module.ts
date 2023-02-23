@@ -17,6 +17,8 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import {MatRadioModule} from '@angular/material/radio'
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker'
+import { CommonModule } from '@angular/common';
+
 
 @NgModule({
   declarations: [
@@ -40,7 +42,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker'
     NgxChartsModule,
     MatRadioModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    CommonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

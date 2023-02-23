@@ -26,34 +26,54 @@
 
           <!-- ce qui apparait apres avoir appuier sur le bouton  -->
         <div *ngIf="showResult">
+
+          <div class="result1">
+          Gare départ: {{ departControl.value |titlecase }}.<br>
+          Gare Arriver: {{arriveeControl.value |titlecase}}<br>
+        </div>
         <div class="instant">
          <!-- bouton radio pour instant de la journée -->
         <mat-radio-button  *ngFor="let item of instant"  [value]="item">
           <option>{{item}}</option>
         </mat-radio-button>
-      </div >
-      <div class="result1" >
-        <p>
-          <h3>Poncualité de la veille</h3>
-        Gare départ: {{ departControl.value |titlecase }}.<br>
-        Gare Arriver: {{arriveeControl.value |titlecase}}<br>
-        Chance que le train arrive a l heure {{ponctualite}} %<br>
-        Date : {{dateponct |date:'EEEE dd MMMM yyyy'}}.<br>
-        retard du train : {{retard}} minutes<br>
+      </div>
+
+      <div class="ResultGeneral">
+     </div>
+     <div class="Graph">
+    <select name="mois" id="mois">
+      <option value="">--Choisissez votre mois--
+        <option value="janvier">Janvier</option>
+        <option value="fevier">Février</option>
+        <option value="mars">Mars</option>
+        <option value="avril">Avril</option>
+        <option value="mai">Mai</option>
+        <option value="juin">juin</option>
+        <option value="juillet">Juillet</option>
+        <option value="aout">Aout</option>
 
 
 
+    </select>
+      <ngx-charts-bar-vertical
+      [results]="[
+      { name: 'Nombre de minute de retard', value: retardgraph },
+      { name: '% train a l heure', value: tauxgraph },
+      { name: 'Train moins de 6 min', value: trainmoins6 }
 
-       <p>
+    ]"
+    [yAxis]="true"
+    [xAxis]="true"
+    [legend]="true"
 
-       </div>
+      >
 
+
+      </ngx-charts-bar-vertical>
+     </div>
+    </div>
         <!-- info général ( ligne -heure départ - arrivé - retard)
       bouton pour choisir les instant(genre matin ou quoi) et donnée j-1  -->
-
-
-
-
-    </div>
-  </div>
+      </div>
+    </div >
 

@@ -8,6 +8,8 @@ import { LigneArretService } from '../services/ligne-arret.service';
 import {InstantService} from'../services/instant.service';
 import { PonctualiteJ1Service} from '../services/ponctualite-j1.service';
 import {PonctualiteMomentData, PonctualiteMomentService }from '../services/ponctualite-moment.service'
+import { GroupedDataFormat } from '../services/format-data.service';
+
 
 
 
@@ -29,6 +31,7 @@ export class PonctualiteComponent implements OnInit {
                 ){}
 
 
+  DateAjd:Date=new Date()
   options:string[]=[]
   instant: string[]=[]
   ponctualite:number = 0
@@ -38,6 +41,7 @@ export class PonctualiteComponent implements OnInit {
   dateGraph:Date = new Date()
   retardgraph: number=0
   tauxgraph:number=0
+  trainmoins6:number=0
 
 
 
@@ -47,6 +51,13 @@ export class PonctualiteComponent implements OnInit {
   departControl = new FormControl();
   arriveeControl = new FormControl();
   showResult=false
+
+
+ InfoMoiGraph : GroupedDataFormat[] = [
+    {name: "% de chance de train a l heure", series: []},
+    {name: "Nombre de trains moins de 6 min", series: []},
+    {name: "nombre de minute de retard", series:[]}
+  ]
 
 
     //filtre recherche
@@ -107,26 +118,39 @@ Poncutualit(){
         this.ponctualite=item.ponctualite_pourcentage
         this.retard=item.min_de_retard
       }
-
-
-
+    },
+    error: (err) => {
+      console.log(err);
     }
   })
 }
 
 graph(){
-
-
   this._Ponctualite.getOnePonctuality(this.departControl.value).subscribe({
     next:(data:PonctualiteMomentData[])=>{
        for(let objet of data){
-        this.dateGraph= new Date()
+        this.dateGraph= new Date(objet.date)
         this.retardgraph=objet.min_de_retard
         this.tauxgraph=objet.ponctualite_pourcentage
+        this.trainmoins6=objet.nb_train_inferieur_6_min
        }
+       if(this.dateGraph.getMonth() == 0){
+        if(
+          (this.dateGraph.getFullYear() == this.DateAjd.getFullYear() - 1
+          && this.dateGraph.getMonth() == 11
+          && this.dateGraph.getDate() >= this.DateAjd.getDate())
+          ||
+          (this.dateGraph.getFullYear() == this.DateAjd.getFullYear()
+          && this.dateGraph.getMonth() == this.DateAjd.getMonth()
+          && this.dateGraph.getDate() <= this.DateAjd.getDate())
+        ){
 
+
+
+        }
+      } else {}
     }
-  })
+  });
 }
 
     //fonction de filtrage des options
@@ -149,6 +173,7 @@ graph(){
   showValues() {
     this.showResult = true;
     this.Poncutualit()
+    this.graph()
 
 
   }
@@ -160,6 +185,8 @@ graph(){
       }
 
 }
+
+
 
 
 
