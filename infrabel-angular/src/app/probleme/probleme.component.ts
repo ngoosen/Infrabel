@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
+import localeFr from '@angular/common/locales/fr'
+import { Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
 import {FormControl} from '@angular/forms'
 import { withPreloading } from '@angular/router';
 import { EMPTY, Observable} from 'rxjs';
@@ -21,8 +23,11 @@ export class ProblemeComponent {
     private _ligneArretService: LigneArretService,
     private _ponctualiteService: PonctualiteJ1Service,
     private _incidentService: IncidentService,
-    private _format : FormatDataService
-    ){}
+    private _format : FormatDataService,
+    @Inject(LOCALE_ID) private locale: string
+    ){
+      registerLocaleData(localeFr)
+    }
 
   mycontrol = new FormControl
   departControl = new FormControl();
@@ -39,6 +44,8 @@ export class ProblemeComponent {
   averageDelayDepartureInTime: TimeFormat = {hours: 0, minutes: 0, seconds: 0}
 
   todaysDate : Date = new Date("2023-02-01")
+  lastMonthDate: Date = new Date(this.todaysDate.getMonth() == 0 ? this.todaysDate.getFullYear() - 1 : this.todaysDate.getFullYear(), this.todaysDate.getMonth() == 0 ? 11 : this.todaysDate.getMonth() - 1, this.todaysDate.getDate())
+
   nbIncident: number = 0
   nbRetardTotal: number = 0
   retardTotalTime: TimeFormat = {hours: 0, minutes: 0, seconds: 0}
@@ -93,6 +100,8 @@ export class ProblemeComponent {
 
   // Button onClick
   getData(){
+    this.lastMonthDate = new Date(this.todaysDate.getMonth() == 0 ? this.todaysDate.getFullYear() - 1 : this.todaysDate.getFullYear(), this.todaysDate.getMonth() == 0 ? 11 : this.todaysDate.getMonth() - 1, this.todaysDate.getDate())
+
     if(this.departControl.value == undefined){
       this.showError = true
       setTimeout(() => {
@@ -101,9 +110,10 @@ export class ProblemeComponent {
     }
     this.getAverageDelay()
     this.getIncidentStats() // => real db
-    //this.incidentGraph = data // => fake db
+    //this.monthlyDelayLineGraph = data // => fake db
     this.getLatestIncident()
     this.getRelationAverage()
+    this.onSelect({name: "Heurt d'une personne", value: 1})
     this.showResult = true
   }
 
@@ -151,19 +161,8 @@ export class ProblemeComponent {
         for(let obj of data){
           let incidentDate = new Date(obj.date_incident)
 
-          // Si on est en janvier, il faut check pour décembre de l'année d'avant + les jours déjà écoulés en janvier
-          if(this.todaysDate.getMonth() == 0){
-            if(
-              (incidentDate.getFullYear() == this.todaysDate.getFullYear() - 1
-              && incidentDate.getMonth() == 11
-              && incidentDate.getDate() >= this.todaysDate.getDate())
-              ||
-              (incidentDate.getFullYear() == this.todaysDate.getFullYear()
-              && incidentDate.getMonth() == this.todaysDate.getMonth()
-              && incidentDate.getDate() <= this.todaysDate.getDate())
-            ){
-              // c'est ok, on peut l'ajouter au graph
-              this.nbIncident++
+          if(incidentDate < this.todaysDate || incidentDate > this.lastMonthDate){
+            this.nbIncident++
               this.monthlyDelayLineGraph[0].series.push(
                 {
                   value: obj.retard_minutes,
@@ -183,41 +182,75 @@ export class ProblemeComponent {
                 this.plusGrosTrainsSupp = obj.nb_trains_supp
                 this.plusGrosIncident = obj.type_incident
               }
-            }
           }
-          else{ // si c'est un autre mois, il faut check pour les jours déjà écoulés + ceux restants du mois passé
-            if(
-              (incidentDate.getFullYear() == this.todaysDate.getFullYear()
-              && incidentDate.getMonth() == this.todaysDate.getMonth()
-              && incidentDate.getDate() <= this.todaysDate.getDate())
-              ||
-              (incidentDate.getFullYear() == this.todaysDate.getFullYear()
-              && incidentDate.getMonth() == this.todaysDate.getMonth() - 1
-              && incidentDate.getDate() >= this.todaysDate.getDate())
-            ){
-              //c'est ok ça va dans le graph
-              this.nbIncident++
-              this.monthlyDelayLineGraph[0].series.push(
-                {
-                  value: obj.retard_minutes,
-                  name: incidentDate.toString()
-                })
-              this.nbRetardTotal += obj.retard_minutes
 
-              this.monthlyDelayLineGraph[1].series.push(
-                {
-                  value: obj.nb_trains_supp,
-                  name: incidentDate.toString()
-                })
-              this.nbTrainsSuppTotal += obj.nb_trains_supp
+          // // Si on est en janvier, il faut check pour décembre de l'année d'avant + les jours déjà écoulés en janvier
+          // if(this.todaysDate.getMonth() == 0){
+          //   if(
+          //     (incidentDate.getFullYear() == this.todaysDate.getFullYear() - 1
+          //     && incidentDate.getMonth() == 11
+          //     && incidentDate.getDate() >= this.todaysDate.getDate())
+          //     ||
+          //     (incidentDate.getFullYear() == this.todaysDate.getFullYear()
+          //     && incidentDate.getMonth() == this.todaysDate.getMonth()
+          //     && incidentDate.getDate() <= this.todaysDate.getDate())
+          //   ){
+          //     // c'est ok, on peut l'ajouter au graph
+          //     this.nbIncident++
+          //     this.monthlyDelayLineGraph[0].series.push(
+          //       {
+          //         value: obj.retard_minutes,
+          //         name: incidentDate.toString()
+          //       })
+          //     this.nbRetardTotal += obj.retard_minutes
 
-              if(obj.retard_minutes > this.plusGrosRetard){
-                this.plusGrosRetard = obj.retard_minutes
-                this.plusGrosTrainsSupp = obj.nb_trains_supp
-                this.plusGrosIncident = obj.type_incident
-              }
-            }
-          }
+          //     this.monthlyDelayLineGraph[1].series.push(
+          //       {
+          //         value: obj.nb_trains_supp,
+          //         name: incidentDate.toString()
+          //       })
+          //     this.nbTrainsSuppTotal += obj.nb_trains_supp
+
+          //     if(obj.retard_minutes > this.plusGrosRetard){
+          //       this.plusGrosRetard = obj.retard_minutes
+          //       this.plusGrosTrainsSupp = obj.nb_trains_supp
+          //       this.plusGrosIncident = obj.type_incident
+          //     }
+          //   }
+          // }
+          // else{ // si c'est un autre mois, il faut check pour les jours déjà écoulés + ceux restants du mois passé
+          //   if(
+          //     (incidentDate.getFullYear() == this.todaysDate.getFullYear()
+          //     && incidentDate.getMonth() == this.todaysDate.getMonth()
+          //     && incidentDate.getDate() <= this.todaysDate.getDate())
+          //     ||
+          //     (incidentDate.getFullYear() == this.todaysDate.getFullYear()
+          //     && incidentDate.getMonth() == this.todaysDate.getMonth() - 1
+          //     && incidentDate.getDate() >= this.todaysDate.getDate())
+          //   ){
+          //     //c'est ok ça va dans le graph
+          //     this.nbIncident++
+          //     this.monthlyDelayLineGraph[0].series.push(
+          //       {
+          //         value: obj.retard_minutes,
+          //         name: incidentDate.toString()
+          //       })
+          //     this.nbRetardTotal += obj.retard_minutes
+
+          //     this.monthlyDelayLineGraph[1].series.push(
+          //       {
+          //         value: obj.nb_trains_supp,
+          //         name: incidentDate.toString()
+          //       })
+          //     this.nbTrainsSuppTotal += obj.nb_trains_supp
+
+          //     if(obj.retard_minutes > this.plusGrosRetard){
+          //       this.plusGrosRetard = obj.retard_minutes
+          //       this.plusGrosTrainsSupp = obj.nb_trains_supp
+          //       this.plusGrosIncident = obj.type_incident
+          //     }
+          //   }
+          //}
 
           this.retardTotalTime = this._format.formatTime(this.nbRetardTotal)
           this.plusGrosRetardTime = this._format.formatTime(this.plusGrosRetard)
@@ -239,7 +272,6 @@ export class ProblemeComponent {
             incidentIsInGraph.value++
           }
         }
-        console.log(this.incidentPieGraph);
 
       },
       error: (err) => {
@@ -312,9 +344,10 @@ export class ProblemeComponent {
     this._incidentService.getIncidents().subscribe({
       next: (data: IncidentData[]) => {
         for(let item of data){
-          if(incident.name == item.type_incident){
+          let itemDate = new Date(item.date_incident)
+          if(incident.name == item.type_incident && itemDate.getFullYear() == this.todaysDate.getFullYear() && itemDate.getMonth() == this.todaysDate.getMonth()){
             this.overallIncidentsBarGraph.push({
-              name: item.date_incident.toDateString(),
+              name: item.date_incident.toString(),
               value: item.retard_minutes
             })
           }

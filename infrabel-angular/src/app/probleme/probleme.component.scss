@@ -53,8 +53,11 @@ h3{
 }
 #average-delay{
   width: 40%;
-  align-items: flex-start;
   text-align: center;
+  flex-direction: column;
+  background-color: aqua;
+  justify-content: center;
+  align-items: center;
 }
 #monthly-incident-stats{ // <= graph is here
   width: 60%;
@@ -78,7 +81,20 @@ h3{
 }
 .bold{
   font-weight: bold;
+  color: blue;
 }
 #pieChart{
   height: 300px;
+}
+h3{
+  background-color: rgb(66, 66, 201);
+  color: white;
+  padding: 10px;
+  border-radius: 10px 10px 0 0;
+  margin: 0 10%;
+}
+#average-delay section{
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

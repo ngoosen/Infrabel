@@ -46,36 +46,53 @@
 
       <article id="average-delay">
         <h3>À {{ departControl.value | titlecase }}, les trains ont en moyenne</h3>
-        <section class="card">
-          <p>
-            <span *ngIf="averageDelayArrivalInTime.hours > 0">{{averageDelayArrivalInTime.hours}} heures </span>
-            {{averageDelayArrivalInTime.minutes}} minutes
-            et {{averageDelayArrivalInTime.seconds}} secondes
-          </p>
-          <p>
-            de retard à l'arrivée
-          </p>
-        </section>
-        <section class="card">
-          <p>
-            <span *ngIf="averageDelayDepartureInTime.hours > 0">{{averageDelayDepartureInTime.hours}} heures </span>
-            {{averageDelayDepartureInTime.minutes}} minutes et
-            {{averageDelayDepartureInTime.seconds}} secondes
-          </p>
-          <p>
-            de retard au départ.
-          </p>
+        <section>
+          <div class="card">
+            <p>
+              <span *ngIf="averageDelayArrivalInTime.hours > 0">{{averageDelayArrivalInTime.hours}} heures </span>
+              {{averageDelayArrivalInTime.minutes}} minutes
+              et {{averageDelayArrivalInTime.seconds}} secondes
+            </p>
+            <p>
+              de retard à l'arrivée
+            </p>
+          </div>
+          <div class="card">
+            <p>
+              <span *ngIf="averageDelayDepartureInTime.hours > 0">{{averageDelayDepartureInTime.hours}} heures </span>
+              {{averageDelayDepartureInTime.minutes}} minutes et
+              {{averageDelayDepartureInTime.seconds}} secondes
+            </p>
+            <p>
+              de retard au départ.
+            </p>
+          </div>
         </section>
       </article>
 
       <article id="monthly-incident-stats">
-        <p>
-          Durant le mois de {{todaysDate.toLocaleDateString("fr-FR", {month: "long"})}}, il est survenu <span class="bold">{{nbIncident}} incidents</span>,
-          engendrant <span class="bold"><span *ngIf="retardTotalTime.hours > 0">{{retardTotalTime.hours}} heures, </span>{{retardTotalTime.minutes}} minutes et {{retardTotalTime.seconds}} secondes de retard</span> cumulées et
-          <span class="bold">{{nbTrainsSuppTotal}} trains supprimés</span> cumulés.
-        </p>
+        <section>
+          <h3>
+            Durant la période du
+            {{lastMonthDate.toLocaleDateString("fr-FR", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}} au
+            {{todaysDate.toLocaleDateString("fr-FR", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}},
+            il y a eu
+          </h3>
+          <p>
+            <span class="bold">{{nbIncident}} incidents</span> à {{departControl.value | titlecase}}, engendrant
+          </p>
+          <p>
+            <span class="bold">
+              <span *ngIf="retardTotalTime.hours > 0">{{retardTotalTime.hours}} heures, </span>
+              {{retardTotalTime.minutes}} minutes et {{retardTotalTime.seconds}} secondes de retard
+            </span> cumulées et
+          </p>
+          <p>
+            <span class="bold">{{nbTrainsSuppTotal}} trains supprimés</span> cumulés.
+          </p>
+        </section>
 
-        <div>
+        <section>
           <ngx-charts-line-chart *ngIf="monthlyDelayLineGraph.length > 0"
             [results]="monthlyDelayLineGraph"
             [legend]="true"
@@ -83,16 +100,18 @@
             [yAxis]="true"
           >
           </ngx-charts-line-chart>
-        </div>
+        </section>
       </article>
 
       <article id="global-incident-stats">
+        <h3>Globalement</h3>
         <section>
           <p>
             Le plus gros retard ce mois-ci était de <span *ngIf="plusGrosRetardTime.hours > 0">{{plusGrosRetardTime.hours}} heures, </span>{{plusGrosRetardTime.minutes}} minutes et {{plusGrosRetardTime.seconds}} secondes
             à cause de {{plusGrosIncident | lowercase}}
             et a provoqué la suppression de {{plusGrosTrainsSupp}} trains.
           </p>
+
         </section>
 
         <section>
@@ -101,23 +120,35 @@
             ce qui a engendré <span *ngIf="latestDelayTime.hours > 0">{{latestDelayTime.hours}} heures, </span>{{latestDelayTime.minutes}} minutes et {{latestDelayTime.seconds}} secondes de retard
             et {{latestTrainsSupp}} trains supprimés.
           </p>
+          <div id="pieChart" *ngIf="incidentPieGraph.length > 0">
+            <ngx-charts-pie-chart
+              [results]="incidentPieGraph"
+              [labels]="true"
+              (select)="onSelect($event)"
+            >
+            </ngx-charts-pie-chart>
+          </div>
         </section>
 
         <section>
-          <div id="pieChart" *ngIf="incidentPieGraph.length > 0">
-            <ngx-charts-pie-chart
-            [results]="incidentPieGraph"
-            [labels]="true"
-            (select)="onSelect($event)"
-            >
-          </ngx-charts-pie-chart>
-        </div>
           <p>
             graph donut avec les différents types d'incident à l'arrêt sélectionné / nb d'incidents => clic sur le type pour montrer le retard/trains supp par incident
           </p>
           <p>
             graph ligne types d'incident / retard et trains supp
           </p>
+          <div>
+            <ngx-charts-bar-vertical *ngIf="overallIncidentsBarGraph.length > 0"
+              [results]="overallIncidentsBarGraph"
+              [xAxis]="true"
+              [yAxis]="true"
+              [showXAxisLabel]="true"
+              [yAxisLabel]="'Retard en minutes'"
+              [showYAxisLabel]="true"
+              [xAxisLabel]="'Date'"
+            >
+            </ngx-charts-bar-vertical>
+          </div>
         </section>
       </article>
 
