@@ -1,4 +1,4 @@
-<h1>Problèmes en gare</h1>
+<h1>Les incidents et leur impact sur le réseau</h1>
 
 <div class="container">
 
@@ -37,7 +37,7 @@
     </div>
   </div>
 
-  <hr>
+  <hr *ngIf="!showResult">
 
   <h2 *ngIf="showResult">La situation à {{ departControl.value | titlecase }}</h2>
   <div class="results" *ngIf="showResult">
