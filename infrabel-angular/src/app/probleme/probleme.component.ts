@@ -10,7 +10,7 @@ import { DataFormat, FormatDataService, GroupedDataFormat, TimeFormat } from '..
 import { IncidentData, IncidentService } from '../services/incident.service';
 import { LigneArretService } from '../services/ligne-arret.service';
 import { PonctualiteJ1Service } from '../services/ponctualite-j1.service';
-import { data, pieChartIncidentTypes } from './fakedb';
+import { barChartDelayByIncident, data, pieChartIncidentTypes } from './fakedb';
 
 @Component({
   selector: 'app-probleme',
@@ -68,11 +68,14 @@ export class ProblemeComponent {
 
   incidentPieGraph: DataFormat[] = []
   overallIncidentsBarGraph: DataFormat[] = []
+  selectedIncidentType: string = ""
 
   relationArrivalAverage: number = 0
   relationDepartureAverage: number = 0
 
   picker: any = EMPTY
+
+  graphTheme: string = "nightLights"
 
     //filtre recherche
   ngOnInit(): void {
@@ -109,11 +112,13 @@ export class ProblemeComponent {
       }, 3000)
     }
     this.getAverageDelay()
-    this.getIncidentStats() // => real db
-    //this.monthlyDelayLineGraph = data // => fake db
+    this.getIncidentStats()
     this.getLatestIncident()
     this.getRelationAverage()
     this.onSelect({name: "Heurt d'une personne", value: 1})
+    this.monthlyDelayLineGraph = data // => fake db
+    this.incidentPieGraph = pieChartIncidentTypes // => fake db
+    this.overallIncidentsBarGraph = barChartDelayByIncident // => fake db
     this.showResult = true
   }
 
@@ -343,6 +348,7 @@ export class ProblemeComponent {
   onSelect(incident: DataFormat){
     this._incidentService.getIncidents().subscribe({
       next: (data: IncidentData[]) => {
+        this.selectedIncidentType = incident.name
         for(let item of data){
           let itemDate = new Date(item.date_incident)
           if(incident.name == item.type_incident && itemDate.getFullYear() == this.todaysDate.getFullYear() && itemDate.getMonth() == this.todaysDate.getMonth()){

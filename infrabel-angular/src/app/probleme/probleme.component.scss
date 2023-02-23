@@ -1,6 +1,12 @@
 h1{
   text-align: center;
 }
+h2{
+  text-align: center;
+  border: blue solid 2px;
+  border-radius: 5px;
+  padding: 10px;
+}
 h3{
   font-size: 20px;
 }
@@ -45,6 +51,8 @@ h3{
 .results{
   display: flex;
   flex-direction: column;
+  background-color: aliceblue;
+  border-radius: 5px;
 }
 #byStation{
   justify-content: baseline;
@@ -55,19 +63,16 @@ h3{
   width: 40%;
   text-align: center;
   flex-direction: column;
-  background-color: aqua;
   justify-content: center;
   align-items: center;
+}
+#average-delay section{
+  padding-top: 10%;
 }
 #monthly-incident-stats{ // <= graph is here
   width: 60%;
   align-items: flex-start;
   text-align: center;
-}
-#global-incident-stats{
-  background-color: lightsalmon;
-  width: 100%;
-  align-items: flex-end;
 }
 .card{
   background-color: rgb(207, 207, 247);
@@ -83,18 +88,46 @@ h3{
   font-weight: bold;
   color: blue;
 }
-#pieChart{
-  height: 300px;
-}
 h3{
   background-color: rgb(66, 66, 201);
   color: white;
   padding: 10px;
   border-radius: 10px 10px 0 0;
-  margin: 0 10%;
+  margin: 0 2%;
 }
-#average-delay section{
+#global-incident-stats{
+  width: 100%;
+  align-items: flex-end;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-wrap: wrap;
+  background-color: rgb(207, 207, 247);
+  margin: 0 2%;
+  border-radius: 10px;
+}
+#global-incident-stats h3{
+  width: 100%;
+//   background-color: rgb(66, 66, 201);
+//   color: white;
+//   padding: 10px;
+//   border-radius: 10px 10px 0 0;
+}
+#global-incident-stats section{
+  width: 50%;
+  text-align: center;
+  margin: 2% 0;
+}
+#global1{
+  justify-content: flex-start;
+}
+#global2{
+  justify-content: flex-end;
+}
+#global-incident-stats div{
+  height: 500px;
+}
+h4{
+  border: blue solid 2px;
+  border-radius: 5px;
+  margin: 5px 5%;
+  padding: 5px;
 }

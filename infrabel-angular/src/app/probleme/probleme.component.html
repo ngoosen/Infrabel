@@ -39,8 +39,8 @@
 
   <hr>
 
+  <h2 *ngIf="showResult">La situation à {{ departControl.value | titlecase }}</h2>
   <div class="results" *ngIf="showResult">
-    <h2>La situation à {{ departControl.value | titlecase }}</h2>
 
     <div id="byStation">
 
@@ -98,6 +98,7 @@
             [legend]="true"
             [xAxis]="true"
             [yAxis]="true"
+            [scheme]="graphTheme"
           >
           </ngx-charts-line-chart>
         </section>
@@ -105,40 +106,40 @@
 
       <article id="global-incident-stats">
         <h3>Globalement</h3>
-        <section>
+        <section id="global1">
           <p>
-            Le plus gros retard ce mois-ci était de <span *ngIf="plusGrosRetardTime.hours > 0">{{plusGrosRetardTime.hours}} heures, </span>{{plusGrosRetardTime.minutes}} minutes et {{plusGrosRetardTime.seconds}} secondes
-            à cause de {{plusGrosIncident | lowercase}}
-            et a provoqué la suppression de {{plusGrosTrainsSupp}} trains.
+            Le plus gros retard ce mois-ci était de
+            <span class="bold">
+              <span *ngIf="plusGrosRetardTime.hours > 0">{{plusGrosRetardTime.hours}} heures, </span>
+              {{plusGrosRetardTime.minutes}} minutes et {{plusGrosRetardTime.seconds}} secondes
+            </span>
+            à cause de <span class="bold">{{plusGrosIncident | lowercase}}</span>
+            et a provoqué la suppression de <span class="bold">{{plusGrosTrainsSupp}} trains.</span>
           </p>
 
-        </section>
-
-        <section>
-          <p>
-            L'incident le plus récent était {{latestIncident | lowercase}},
-            ce qui a engendré <span *ngIf="latestDelayTime.hours > 0">{{latestDelayTime.hours}} heures, </span>{{latestDelayTime.minutes}} minutes et {{latestDelayTime.seconds}} secondes de retard
-            et {{latestTrainsSupp}} trains supprimés.
-          </p>
-          <div id="pieChart" *ngIf="incidentPieGraph.length > 0">
+          <h4>Les incidents les plus récurrents à {{departControl.value | titlecase}}</h4>
+          <div *ngIf="incidentPieGraph.length > 0">
             <ngx-charts-pie-chart
               [results]="incidentPieGraph"
               [labels]="true"
               (select)="onSelect($event)"
+              [scheme]="graphTheme"
             >
             </ngx-charts-pie-chart>
           </div>
         </section>
 
-        <section>
+        <section id="global2">
           <p>
-            graph donut avec les différents types d'incident à l'arrêt sélectionné / nb d'incidents => clic sur le type pour montrer le retard/trains supp par incident
+            L'incident le plus récent était <span class="bold">{{latestIncident | lowercase}}</span>,
+            ce qui a engendré
+            <span class="bold" *ngIf="latestDelayTime.hours > 0">{{latestDelayTime.hours}} heures, </span>
+            <span class="bold">{{latestDelayTime.minutes}} minutes et {{latestDelayTime.seconds}} secondes de retard</span>
+            et <span class="bold">{{latestTrainsSupp}} trains supprimés</span>.
           </p>
-          <p>
-            graph ligne types d'incident / retard et trains supp
-          </p>
-          <div>
-            <ngx-charts-bar-vertical *ngIf="overallIncidentsBarGraph.length > 0"
+          <h4>Le retard en minutes sur l'ensemble du réseau pour {{selectedIncidentType | lowercase}}</h4>
+          <div *ngIf="overallIncidentsBarGraph.length > 0">
+            <ngx-charts-bar-vertical
               [results]="overallIncidentsBarGraph"
               [xAxis]="true"
               [yAxis]="true"
@@ -146,6 +147,7 @@
               [yAxisLabel]="'Retard en minutes'"
               [showYAxisLabel]="true"
               [xAxisLabel]="'Date'"
+              [scheme]="graphTheme"
             >
             </ngx-charts-bar-vertical>
           </div>
