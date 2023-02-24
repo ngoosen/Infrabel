@@ -39,13 +39,13 @@
 
   <hr *ngIf="!showResult">
 
-  <h2 *ngIf="showResult">La situation à {{ departControl.value | titlecase }}</h2>
+  <h2 *ngIf="showResult">La situation à {{ selectedStop | titlecase }}</h2>
   <div class="results" *ngIf="showResult">
 
     <div id="byStation">
 
       <article id="average-delay">
-        <h3>À {{ departControl.value | titlecase }}, les trains ont en moyenne</h3>
+        <h3>À {{ selectedStop | titlecase }}, les trains ont en moyenne</h3>
         <section>
           <div class="card">
             <p>
@@ -79,7 +79,7 @@
             il y a eu
           </h3>
           <p>
-            <span class="bold">{{nbIncident}} incidents</span> à {{departControl.value | titlecase}}, engendrant
+            <span class="bold">{{nbIncident}} incidents</span> à {{selectedStop | titlecase}}, engendrant
           </p>
           <p>
             <span class="bold">
@@ -117,7 +117,7 @@
             et a provoqué la suppression de <span class="bold">{{plusGrosTrainsSupp}} trains.</span>
           </p>
 
-          <h4>Les incidents les plus récurrents à {{departControl.value | titlecase}}</h4>
+          <h4>Les incidents les plus récurrents à {{selectedStop | titlecase}}</h4>
           <div *ngIf="incidentPieGraph.length > 0">
             <ngx-charts-pie-chart
               [results]="incidentPieGraph"
@@ -159,12 +159,12 @@
     <div id="byRelation">
       <article>
         <p>
-          Les relations dans lesquelles se trouve {{ departControl.value | titlecase }} ont en moyenne {{relationArrivalAverage}} secondes de retard à l'arrivée et {{relationDepartureAverage}} secondes de retard au départ.
+          Les relations dans lesquelles se trouve {{ selectedStop | titlecase }} ont en moyenne {{relationArrivalAverage}} secondes de retard à l'arrivée et {{relationDepartureAverage}} secondes de retard au départ.
         </p>
       </article>
       <article>
         <p>
-          Les relations dans lesquelles se trouve {{ departControl.value | titlecase }} ont en moyenne x incidents, le plus récurrent étant x.
+          Les relations dans lesquelles se trouve {{ selectedStop | titlecase }} ont en moyenne x incidents, le plus récurrent étant x.
         </p>
       </article>
     </div>

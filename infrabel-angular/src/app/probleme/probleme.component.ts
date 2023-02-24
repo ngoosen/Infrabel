@@ -2,13 +2,14 @@ import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr'
 import { Component, Inject, LOCALE_ID, OnInit } from '@angular/core';
 import {FormControl} from '@angular/forms'
-import { withPreloading } from '@angular/router';
+import { ActivatedRoute, withPreloading } from '@angular/router';
 import { EMPTY, Observable} from 'rxjs';
 import { map,startWith } from 'rxjs';
 import { __values } from 'tslib';
 import { DataFormat, FormatDataService, GroupedDataFormat, TimeFormat } from '../services/format-data.service';
 import { IncidentData, IncidentService } from '../services/incident.service';
 import { LigneArretService } from '../services/ligne-arret.service';
+import { IncidentParams, ParamsInUrlService } from '../services/params-in-url.service';
 import { PonctualiteJ1Service } from '../services/ponctualite-j1.service';
 import { barChartDelayByIncident, data, pieChartIncidentTypes } from './fakedb';
 
@@ -24,13 +25,18 @@ export class ProblemeComponent {
     private _ponctualiteService: PonctualiteJ1Service,
     private _incidentService: IncidentService,
     private _format : FormatDataService,
+    private _params : ParamsInUrlService,
+    private _router: ActivatedRoute,
     @Inject(LOCALE_ID) private locale: string
-    ){
+    )
+    {
       registerLocaleData(localeFr)
     }
 
   mycontrol = new FormControl
   departControl = new FormControl();
+
+  selectedStop: string = this.departControl.value
 
   options : string[]=[]
   filterredOption : Observable<string[]> = EMPTY
@@ -77,8 +83,8 @@ export class ProblemeComponent {
 
   graphTheme: string = "nightLights"
 
-    //filtre recherche
   ngOnInit(): void {
+    //filtre recherche
     this._ligneArretService.getStops().subscribe( {
       next: (data) => {
         let temptab = data
@@ -95,36 +101,54 @@ export class ProblemeComponent {
         console.log("Erreur: " + err);
       }
     })
+
+    // Read params
+
+    this._router.queryParamMap.subscribe((params: any) => {
+      console.log(params);
+
+      if(params.params.date != undefined){
+        this.todaysDate = new Date(params.params.date)
+      }
+      if(params.params.stop != undefined){
+        this.getData(params.params.stop)
+      }
+    })
   }
+
   private _filter(value:string){
     const filtervalue=value.toLowerCase()
     return this.options.filter(option=>option.toLocaleLowerCase().includes(filtervalue))
   }
 
   // Button onClick
-  getData(){
+  getData(stop: string = this.departControl.value){
+    console.log(stop);
+
+    this.selectedStop = stop
     this.lastMonthDate = new Date(this.todaysDate.getMonth() == 0 ? this.todaysDate.getFullYear() - 1 : this.todaysDate.getFullYear(), this.todaysDate.getMonth() == 0 ? 11 : this.todaysDate.getMonth() - 1, this.todaysDate.getDate())
 
-    if(this.departControl.value == undefined){
+    if(stop == undefined){
       this.showError = true
       setTimeout(() => {
         this.showError = false
       }, 3000)
     }
-    this.getAverageDelay()
-    this.getIncidentStats()
-    this.getLatestIncident()
-    this.getRelationAverage()
-    this.onSelect({name: "Heurt d'une personne", value: 1})
+    this.getAverageDelay(stop)
+    this.getIncidentStats(stop)
+    this.getLatestIncident(stop)
+    this.getRelationAverage(stop)
+    this.onSelect({name: "Heurt d'une personne", value: 1}) // => changer ça mais je sais pas par quoi
     this.monthlyDelayLineGraph = data // => fake db
     this.incidentPieGraph = pieChartIncidentTypes // => fake db
     this.overallIncidentsBarGraph = barChartDelayByIncident // => fake db
     this.showResult = true
+    this._params.incidentParamsInUrl({stop: stop, selectedDate: this.todaysDate.toISOString()})
   }
 
   // Moyenne de retard / arrêt
-  getAverageDelay(){
-    this._ponctualiteService.getPonctualityByStop(this.departControl.value).subscribe({
+  getAverageDelay(stop: string = this.departControl.value){
+    this._ponctualiteService.getPonctualityByStop(stop).subscribe({
       next: (data) => {
         this.averageDelayArrivalInSeconds = 0
         this.averageDelayDepartureInSeconds = 0
@@ -151,7 +175,7 @@ export class ProblemeComponent {
   }
 
   // Incidents / arrêt
-  getIncidentStats(){
+  getIncidentStats(stop: string = this.departControl.value){
     this.nbIncident = 0
     for(let item of this.monthlyDelayLineGraph){
       item.series = []
@@ -160,7 +184,7 @@ export class ProblemeComponent {
     this.nbTrainsSuppTotal = 0
     this.plusGrosRetard = 0
 
-    this._incidentService.getIncidentByPlace(this.departControl.value).subscribe({
+    this._incidentService.getIncidentByPlace(stop).subscribe({
       next: (data : IncidentData[]) => {
 
         for(let obj of data){
@@ -188,74 +212,6 @@ export class ProblemeComponent {
                 this.plusGrosIncident = obj.type_incident
               }
           }
-
-          // // Si on est en janvier, il faut check pour décembre de l'année d'avant + les jours déjà écoulés en janvier
-          // if(this.todaysDate.getMonth() == 0){
-          //   if(
-          //     (incidentDate.getFullYear() == this.todaysDate.getFullYear() - 1
-          //     && incidentDate.getMonth() == 11
-          //     && incidentDate.getDate() >= this.todaysDate.getDate())
-          //     ||
-          //     (incidentDate.getFullYear() == this.todaysDate.getFullYear()
-          //     && incidentDate.getMonth() == this.todaysDate.getMonth()
-          //     && incidentDate.getDate() <= this.todaysDate.getDate())
-          //   ){
-          //     // c'est ok, on peut l'ajouter au graph
-          //     this.nbIncident++
-          //     this.monthlyDelayLineGraph[0].series.push(
-          //       {
-          //         value: obj.retard_minutes,
-          //         name: incidentDate.toString()
-          //       })
-          //     this.nbRetardTotal += obj.retard_minutes
-
-          //     this.monthlyDelayLineGraph[1].series.push(
-          //       {
-          //         value: obj.nb_trains_supp,
-          //         name: incidentDate.toString()
-          //       })
-          //     this.nbTrainsSuppTotal += obj.nb_trains_supp
-
-          //     if(obj.retard_minutes > this.plusGrosRetard){
-          //       this.plusGrosRetard = obj.retard_minutes
-          //       this.plusGrosTrainsSupp = obj.nb_trains_supp
-          //       this.plusGrosIncident = obj.type_incident
-          //     }
-          //   }
-          // }
-          // else{ // si c'est un autre mois, il faut check pour les jours déjà écoulés + ceux restants du mois passé
-          //   if(
-          //     (incidentDate.getFullYear() == this.todaysDate.getFullYear()
-          //     && incidentDate.getMonth() == this.todaysDate.getMonth()
-          //     && incidentDate.getDate() <= this.todaysDate.getDate())
-          //     ||
-          //     (incidentDate.getFullYear() == this.todaysDate.getFullYear()
-          //     && incidentDate.getMonth() == this.todaysDate.getMonth() - 1
-          //     && incidentDate.getDate() >= this.todaysDate.getDate())
-          //   ){
-          //     //c'est ok ça va dans le graph
-          //     this.nbIncident++
-          //     this.monthlyDelayLineGraph[0].series.push(
-          //       {
-          //         value: obj.retard_minutes,
-          //         name: incidentDate.toString()
-          //       })
-          //     this.nbRetardTotal += obj.retard_minutes
-
-          //     this.monthlyDelayLineGraph[1].series.push(
-          //       {
-          //         value: obj.nb_trains_supp,
-          //         name: incidentDate.toString()
-          //       })
-          //     this.nbTrainsSuppTotal += obj.nb_trains_supp
-
-          //     if(obj.retard_minutes > this.plusGrosRetard){
-          //       this.plusGrosRetard = obj.retard_minutes
-          //       this.plusGrosTrainsSupp = obj.nb_trains_supp
-          //       this.plusGrosIncident = obj.type_incident
-          //     }
-          //   }
-          //}
 
           this.retardTotalTime = this._format.formatTime(this.nbRetardTotal)
           this.plusGrosRetardTime = this._format.formatTime(this.plusGrosRetard)
@@ -286,8 +242,8 @@ export class ProblemeComponent {
   }
 
   // Incident le plus récent
-  getLatestIncident(){
-    this._incidentService.getIncidentByPlace(this.departControl.value).subscribe({
+  getLatestIncident(stop: string = this.departControl.value){
+    this._incidentService.getIncidentByPlace(stop).subscribe({
       next: (data: IncidentData[]) => {
         let latestData = data.pop()
 
@@ -303,14 +259,14 @@ export class ProblemeComponent {
   }
 
   // Moyenne de retard / relation
-  getRelationAverage(){
+  getRelationAverage(stop: string = this.departControl.value){
     this.relationArrivalAverage = 0
     this.relationDepartureAverage = 0
     let relationStats: any[] = []
     let stopStats: any[] = []
     let commonRelation = ""
 
-    this._ponctualiteService.getPonctualityByStop(this.departControl.value).subscribe({
+    this._ponctualiteService.getPonctualityByStop(stop).subscribe({
       next: (data) => {
         commonRelation = data[0].relation.split(":", 1).toString()
 
