@@ -139,11 +139,11 @@ export class ProblemeComponent {
     this.getLatestIncident(stop)
     this.getRelationAverage(stop)
     this.onSelect({name: "Heurt d'une personne", value: 1}) // => changer ça mais je sais pas par quoi
-    this.monthlyDelayLineGraph = data // => fake db
+    this._params.incidentParamsInUrl({stop: stop, selectedDate: this.todaysDate.toISOString()})
     this.incidentPieGraph = pieChartIncidentTypes // => fake db
     this.overallIncidentsBarGraph = barChartDelayByIncident // => fake db
+    this.monthlyDelayLineGraph = data // => fake db
     this.showResult = true
-    this._params.incidentParamsInUrl({stop: stop, selectedDate: this.todaysDate.toISOString()})
   }
 
   // Moyenne de retard / arrêt
@@ -307,7 +307,8 @@ export class ProblemeComponent {
         this.selectedIncidentType = incident.name
         for(let item of data){
           let itemDate = new Date(item.date_incident)
-          if(incident.name == item.type_incident && itemDate.getFullYear() == this.todaysDate.getFullYear() && itemDate.getMonth() == this.todaysDate.getMonth()){
+
+          if(incident.name == item.type_incident && itemDate > this.lastMonthDate && itemDate < this.todaysDate){
             this.overallIncidentsBarGraph.push({
               name: item.date_incident.toString(),
               value: item.retard_minutes
