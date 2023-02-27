@@ -20,13 +20,15 @@ const PonctualiteJModel = {
             "l1.id_ligne AS ligne_dep, " +
             "l2.id_ligne AS ligne_arr, " +
             "nt.num_train AS num_train, " +
-            "a.nom_arret AS arret " +
+            "a.nom_arret AS arret, " +
+            "d.id_date AS [date] " +
         "FROM trajet_J_1 t " +
             "JOIN relation r ON t.FK_relation_trajet = r.id_relation " +
             "JOIN ligne l1 ON t.FK_ligne_depart = l1.id_ligne " +
             "JOIN ligne l2 ON t.FK_ligne_arrivee = l2.id_ligne " +
             "JOIN numero_train nt ON t.FK_num_train = nt.id_num_train " +
-            "JOIN arret a ON t.FK_arret = a.id_arret")
+            "JOIN arret a ON t.FK_arret = a.id_arret " +
+            "JOIN dates d ON d.id_date = t.FK_date")
         })
     },
     getByID: (id) => {
@@ -48,13 +50,15 @@ const PonctualiteJModel = {
             "l1.id_ligne AS ligne_dep, " +
             "l2.id_ligne AS ligne_arr, " +
             "nt.num_train AS num_train, " +
-            "a.nom_arret AS arret " +
+            "a.nom_arret AS arret, " +
+            "d.id_date AS [date] " +
         "FROM trajet_J_1 t " +
             "JOIN relation r ON t.FK_relation_trajet = r.id_relation " +
             "JOIN ligne l1 ON t.FK_ligne_depart = l1.id_ligne " +
             "JOIN ligne l2 ON t.FK_ligne_arrivee = l2.id_ligne " +
             "JOIN numero_train nt ON t.FK_num_train = nt.id_num_train " +
             "JOIN arret a ON t.FK_arret = a.id_arret " +
+            "JOIN dates d ON d.id_date = t.FK_date " +
         "WHERE t.id_trajet = " + id)
         })
     },
@@ -77,13 +81,15 @@ const PonctualiteJModel = {
             "l1.id_ligne AS ligne_dep, " +
             "l2.id_ligne AS ligne_arr, " +
             "nt.num_train AS num_train, " +
-            "a.nom_arret AS arret " +
+            "a.nom_arret AS arret, " +
+            "d.id_date AS [date] " +
         "FROM trajet_J_1 t " +
             "JOIN relation r ON t.FK_relation_trajet = r.id_relation " +
             "JOIN ligne l1 ON t.FK_ligne_depart = l1.id_ligne " +
             "JOIN ligne l2 ON t.FK_ligne_arrivee = l2.id_ligne " +
             "JOIN numero_train nt ON t.FK_num_train = nt.id_num_train " +
             "JOIN arret a ON t.FK_arret = a.id_arret " +
+            "JOIN dates d ON d.id_date = t.FK_date " +
         "WHERE a.nom_arret = '" + stop + "'")
         })
     }
