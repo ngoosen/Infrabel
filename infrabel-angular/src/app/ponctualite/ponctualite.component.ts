@@ -6,9 +6,10 @@ import { map,startWith } from 'rxjs';
 import { __values } from 'tslib';
 import { LigneArretService } from '../services/ligne-arret.service';
 import {InstantService} from'../services/instant.service';
-import { PonctualiteJ1Service} from '../services/ponctualite-j1.service';
+import { PonctualiteJ1Service,PonctualiteJ1Data} from '../services/ponctualite-j1.service';
 import {PonctualiteMomentData, PonctualiteMomentService }from '../services/ponctualite-moment.service'
 import { GroupedDataFormat } from '../services/format-data.service';
+import { data, Nbrminuteretard, tauxheureok } from './fakedb';
 
 
 
@@ -37,7 +38,7 @@ export class PonctualiteComponent implements OnInit {
   ponctualite:number = 0
   retard:number = 0
   dateponct: Date = new Date()
-
+  ligne:string[]=[]
   dateGraph:Date = new Date()
   retardgraph: number=0
   tauxgraph:number=0
@@ -50,9 +51,21 @@ export class PonctualiteComponent implements OnInit {
   filterredOptionArrive:Observable<string[]>= EMPTY
   departControl = new FormControl();
   arriveeControl = new FormControl();
-  showResult=false
+  showResult:boolean=false
+  showGraph:boolean=true
 
+  todaysDate : Date = new Date("2023-02-01")
+  lastMonthDate: Date = new Date(this.todaysDate.getMonth() == 0 ? this.todaysDate.getFullYear() - 1 : this.todaysDate.getFullYear(), this.todaysDate.getMonth() == 0 ? 11 : this.todaysDate.getMonth() - 1, this.todaysDate.getDate())
+//
+  fakeDb:any
+fakeDbMinRe=Nbrminuteretard
+fakeDbpourc=tauxheureok
+//
 
+//
+Datej_1:Date=new Date
+
+//
  InfoMoiGraph : GroupedDataFormat[] = [
     {name: "% de chance de train a l heure", series: []},
     {name: "Nombre de trains moins de 6 min", series: []},
@@ -105,11 +118,34 @@ export class PonctualiteComponent implements OnInit {
     })
 
   }
+    //fonction de filtrage des options
+    private _filter(value: string): string[] {
+      const filterValue = value.toLowerCase();
+      console.log(filterValue)
+      return this.options.filter(option =>
+        option.toLowerCase().startsWith(filterValue)
+      );
+    }
+
+  //fonction déclenchée par le bouton recherche
+  showValues() {
+    this.lastMonthDate = new Date(this.todaysDate.getMonth() == 0 ? this.todaysDate.getFullYear() - 1 : this.todaysDate.getFullYear(), this.todaysDate.getMonth() == 0 ? 11 : this.todaysDate.getMonth() - 1, this.todaysDate.getDate())
+    this.InfoMoiGraph=data
+    this.showResult = true;
+    this.PonctualiteByStop()
+    this.donneGraph()
+    this.dataLigne()
+    this.onValueChanged()
+
+  }
 
 
+  // fonction pour pas pouvoir cliquer sur bouton avant qui les input soit remplis
+  areInputsValid(): boolean {
+    return this.departControl.value && this.arriveeControl.value;
+     }
 
-
-Poncutualit(){
+PonctualiteByStop(){
   this._Ponctualite.getByStop(this.departControl.value).subscribe({
     next:(data : PonctualiteMomentData[])=>{
 
@@ -125,7 +161,7 @@ Poncutualit(){
   })
 }
 
-graph(){
+donneGraph(){
   this._Ponctualite.getOnePonctuality(this.departControl.value).subscribe({
     next:(data:PonctualiteMomentData[])=>{
        for(let objet of data){
@@ -134,62 +170,122 @@ graph(){
         this.tauxgraph=objet.ponctualite_pourcentage
         this.trainmoins6=objet.nb_train_inferieur_6_min
        }
-       if(this.dateGraph.getMonth() == 0){
-        if(
-          (this.dateGraph.getFullYear() == this.DateAjd.getFullYear() - 1
-          && this.dateGraph.getMonth() == 11
-          && this.dateGraph.getDate() >= this.DateAjd.getDate())
-          ||
-          (this.dateGraph.getFullYear() == this.DateAjd.getFullYear()
-          && this.dateGraph.getMonth() == this.DateAjd.getMonth()
-          && this.dateGraph.getDate() <= this.DateAjd.getDate())
-        ){
-
-
-
-        }
-      } else {}
     }
   });
 }
 
-    //fonction de filtrage des options
-    private _filter(value: string): string[] {
-      const filterValue = value.toLowerCase();
-      console.log(filterValue)
-      return this.options.filter(option =>
-        option.toLowerCase().startsWith(filterValue)
-      );
-    }
+      //   Renvoie tous les liens entre les lignes et les arrêts.
+  dataLigne(){
+    this._ligneArretService.getLineStops().subscribe({
+     next:(datas)=>{
+       for(let item of datas){
+         this.ligne.push(item)
+       }
+     },
+     error: (err) => {
+       console.log(err);
+     }
 
+   })
+  }
 
+  graphRetard(){
+    this._Ponctualite.getOnePonctuality(this.departControl.value).subscribe({
+      next:(data:PonctualiteMomentData[])=>{
+         for(let objet of data){
+          this.dateGraph= new Date(objet.date)
+          this.retardgraph=objet.min_de_retard
 
+      }
+      },
+      error: (err) => {
+        console.log(err);
+      }
 
-
-
-  //
-
-  //fonction déclenchée par le bouton recherche
-  showValues() {
-    this.showResult = true;
-    this.Poncutualit()
-    this.graph()
-
-
+    })
   }
 
 
-  // fonction pour pas pouvoir cliquer sur bouton avant qui les input soit remplis
-  areInputsValid(): boolean {
-     return this.departControl.value && this.arriveeControl.value;
+
+  graphtaux(){
+    this._Ponctualite.getOnePonctuality(this.departControl.value).subscribe({
+      next:(data:PonctualiteMomentData[])=>{
+         for(let objet of data){
+          this.dateGraph= new Date(objet.date)
+          this.tauxgraph=objet.ponctualite_pourcentage
       }
+      }
+    })
+}
+
+graphminderetard(){
+  this._Ponctualite.getOnePonctuality(this.departControl.value).subscribe({
+    next:(data:PonctualiteMomentData[])=>{
+       for(let objet of data){
+        this.dateGraph= new Date(objet.date)
+        this.trainmoins6=objet.nb_train_inferieur_6_min
+    }
+    }
+  })
+}
+
+
+monthlyData: { month: string, value: number }[] = [];
+destinationIc:string=""
+tauxponctualiteIc:number=0
+trainmoins6Ic:number=0
+minuteretardIc:number=0
+
+
+PoncutaliteAnnuelle(){
+  this._Ponctualite.getByStop(this.arriveeControl.value).subscribe({
+      next:(data:PonctualiteMomentData[])=>{
+
+        for(let objet of data){
+
+        this.trainmoins6Ic=objet.nb_train_inferieur_6_min
+        this.tauxponctualiteIc=objet.ponctualite_pourcentage
+        this.minuteretardIc=objet.min_de_retard
+      }
+      }
+  })
 
 }
 
 
 
+selectedValue: any
+
+onValueChanged() {
+  this.showGraph=true
+  switch (this.selectedValue) {
+    case 'tauxgraph':
+      // définir les données pour le graphique "chance d'arriver a l'heure"
+      name:'chance d etre a l heure'
+      this.fakeDb=this.fakeDbpourc
+
+      break;
+    case 'retardgraph':
+      // définir les données pour le graphique "Nombre de minute de retard"
+      name:"Minute de retard"
+      this.fakeDb = this.fakeDbMinRe
+
+      break;
+    case 'trainmoins6':
+      // définir les données pour le graphique "Train moins de 6 minute de retard"
+      name:"train moins de 6 minutes de retard"
+      this.fakeDb = this.trainmoins6
+
+      break;
+    default:
+      this.showGraph=false
+}
+}
 
 
+
+
+}
      // le pourcentage de poncutalité
     // this._Ponctualité.getPonctuality().subscribe({
     //   next:(ponct)=>{
@@ -237,17 +333,34 @@ graph(){
 // }
 
 
-//   Renvoie tous les liens entre les lignes et les arrêts.
-//  dataLigne(){
-//  this._ligneArretService.getLineStops().subscribe({
-//   next:(datas)=>{
-//     for(let item of datas){
-//       this.ligne.push(item)
-//     }
-//   },
-//   error: (err) => {
-//     console.log(err);
-//   }
+// PoncutaliteAnnuelle() {
+//   const months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
 
-// })
+//   for(let month of months) {
+//     this._Ponctualite.getByStopAndMonth(this.arriveeControl.value, month).subscribe({
+//       next:(data:PonctualiteMomentData[])=>{
+
+//         for(let objet of data){
+
+//           this.trainmoins6Ic = objet.nb_train_inferieur_6_min
+//           this.tauxponctualiteIc = objet.ponctualite_pourcentage
+//           this.minuteretardIc = objet.min_de_retard
+//         }
+//       }
+//     });
+//   }
+// }
+
+// PonctualiteAnnuelle() {
+//   for (let mois = 1; mois <= 12; mois++) {
+//     this._Ponctualite.getByStopAndMonth(this.arriveeControl.value, mois).subscribe({
+//       next: (data: PonctualiteMomentData[]) => {
+//        for(let objet of data){
+
+//           this.trainmoins6Ic = objet.nb_train_inferieur_6_min
+//           this.tauxponctualiteIc = objet.ponctualite_pourcentage
+//           this.minuteretardIc = objet.min_de_retard
+//       }
+//     });
+//   }
 // }

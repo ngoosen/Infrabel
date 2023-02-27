@@ -1,6 +1,7 @@
 <h1>Poncualité des trains</h1>
 <div class="container">
-    <div class="gare">
+  <div class="tout">
+  <div class="Gare">
           <!-- Description et champ de recherche de la gare d'arrivée -->
       <p>Choisissez votre gare de départ ainsi que la gare de votre destination, appuyez ensuite sur "rechercher" afin de voir la poncualite de votre train.</p>
       <mat-form-field>
@@ -23,57 +24,62 @@
 
       <!-- Bouton de recherche -->
       <button mat-raised-button  color="primary" (click)="showValues()"  [disabled]="!areInputsValid()">Lancer la recherche</button>
-
+    </div>
           <!-- ce qui apparait apres avoir appuier sur le bouton  -->
         <div *ngIf="showResult">
 
-          <div class="result1">
-          Gare départ: {{ departControl.value |titlecase }}.<br>
-          Gare Arriver: {{arriveeControl.value |titlecase}}<br>
+
+          <h2>La ponctualité pour arrivé {{arriveeControl.value}}</h2>
+               <!-- bouton radio pour instant de la journée -->
+               <!-- <div class="instant">
+                <mat-radio-button  *ngFor="let item of instant"  [value]="item">
+                  <option>{{item}}</option>
+                </mat-radio-button>
+             </div> -->
+          <div class="résultat">
+          <div class="hautgauche">
+
+            <h3>A {{arriveeControl.value |titlecase}} Vous avez </h3><br>
+            <p>{{tauxgraph}} % que votre train arrive a l'heure</p>
+            <p>Retard au départ: </p>
+            <p>retard a l'arrivée: </p>
         </div>
-        <div class="instant">
-         <!-- bouton radio pour instant de la journée -->
-        <mat-radio-button  *ngFor="let item of instant"  [value]="item">
-          <option>{{item}}</option>
-        </mat-radio-button>
-      </div>
+          <div class="graph1">
+            <h3>Donnée globale sur le mois précédent</h3>
+           <ngx-charts-line-chart
+              [results]="InfoMoiGraph"
+              [yAxis]="true"
+              [xAxis]="true"
+              [legend]="true">
 
-      <div class="ResultGeneral">
-     </div>
-     <div class="Graph">
-    <select name="mois" id="mois">
-      <option value="">--Choisissez votre mois--
-        <option value="janvier">Janvier</option>
-        <option value="fevier">Février</option>
-        <option value="mars">Mars</option>
-        <option value="avril">Avril</option>
-        <option value="mai">Mai</option>
-        <option value="juin">juin</option>
-        <option value="juillet">Juillet</option>
-        <option value="aout">Aout</option>
+           </ngx-charts-line-chart>
+          </div>
+    </div>
+    <h3>Donnée annuelle </h3>
+    <div class="select">
+      <label>Choisissez les données que vous voulez : </label><br>
+<select name="type"id="type" [(ngModel)]="selectedValue" (change)="onValueChanged()">
+  <option value="">--Faite votre choix--
+</option>
+    <option value="tauxgraph">chance d'arriver a l'heure en %</option>
+    <option value="retardgraph">Nombre de minute de retard</option>
+    <option value="trainmoins6">Train moin de 6 minute de retard</option>
+</select>
 
+    </div>
+ <div class="graph2">
 
-
-    </select>
-      <ngx-charts-bar-vertical
-      [results]="[
-      { name: 'Nombre de minute de retard', value: retardgraph },
-      { name: '% train a l heure', value: tauxgraph },
-      { name: 'Train moins de 6 min', value: trainmoins6 }
-
-    ]"
+  <ngx-charts-bar-vertical *ngIf="showGraph"
+       [results]="fakeDb"
     [yAxis]="true"
     [xAxis]="true"
-    [legend]="true"
-
-      >
-
-
-      </ngx-charts-bar-vertical>
-     </div>
-    </div>
+    [showDataLabel]="true"
+    >
+</ngx-charts-bar-vertical>
+</div>
+</div>
         <!-- info général ( ligne -heure départ - arrivé - retard)
       bouton pour choisir les instant(genre matin ou quoi) et donnée j-1  -->
-      </div>
-    </div >
+    </div>
+</div>
 
