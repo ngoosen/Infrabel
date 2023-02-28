@@ -8,7 +8,7 @@ import { LigneArretService } from '../services/ligne-arret.service';
 import {InstantService} from'../services/instant.service';
 import { PonctualiteJ1Service,PonctualiteJ1Data} from '../services/ponctualite-j1.service';
 import {PonctualiteMomentData, PonctualiteMomentService }from '../services/ponctualite-moment.service'
-import { GroupedDataFormat } from '../services/format-data.service';
+import { DataFormat, GroupedDataFormat } from '../services/format-data.service';
 import { data, Nbrminuteretard, tauxheureok } from './fakedb';
 
 
@@ -63,7 +63,7 @@ fakeDbpourc=tauxheureok
 //
 
 //
-Datej_1:Date=new Date
+Datej_1:Date=new Date()
 
 //
  InfoMoiGraph : GroupedDataFormat[] = [
@@ -230,7 +230,7 @@ graphminderetard(){
 }
 
 
-monthlyData: { month: string, value: number }[] = [];
+monthlyData: DataFormat[] = [];
 destinationIc:string=""
 tauxponctualiteIc:number=0
 trainmoins6Ic:number=0
@@ -243,9 +243,61 @@ PoncutaliteAnnuelle(){
 
         for(let objet of data){
 
-        this.trainmoins6Ic=objet.nb_train_inferieur_6_min
-        this.tauxponctualiteIc=objet.ponctualite_pourcentage
-        this.minuteretardIc=objet.min_de_retard
+          let tempDate = new Date(objet.date)
+
+          let tempPonct = this.monthlyData.find(ponc => ponc.name == objet.date.toString())
+
+          if(tempPonct == undefined){
+            if(tempDate.getFullYear() == this.todaysDate.getFullYear()){
+              switch (this.selectedValue) {
+                case 'trainmoins6':
+                  this.monthlyData.push({
+                    name: tempDate.toString(),
+                    value: objet.nb_train_inferieur_6_min
+                  })
+                break;
+                case 'retardgraph':
+                  this.monthlyData.push({
+                    name: tempDate.toString(),
+                    value: objet.min_de_retard
+                  })
+                break
+                case 'tauxgraph':
+                  this.monthlyData.push({
+                    name: tempDate.toString(),
+                    value: objet.ponctualite_pourcentage
+                  })
+                break
+                default:
+                  this.showGraph=false
+
+                break;
+              }
+            }
+          }
+          else{
+            switch (this.selectedValue) {
+              case 'trainmoins6':
+                tempPonct.value+= objet.nb_train_inferieur_6_min
+                break;
+              case 'retardgraph':
+                tempPonct.value += objet.min_de_retard
+              break
+              case 'tauxgraph':
+                tempPonct.value += objet.ponctualite_pourcentage
+              break
+              default:
+                      this.showGraph=false
+
+                break;
+            }
+          }
+
+
+
+        // this.trainmoins6Ic=objet.nb_train_inferieur_6_min
+        // this.tauxponctualiteIc=objet.ponctualite_pourcentage
+        // this.minuteretardIc=objet.min_de_retard
       }
       }
   })

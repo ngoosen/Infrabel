@@ -137,7 +137,6 @@ export class ProblemeComponent {
     this.getAverageDelay(stop)
     this.getIncidentStats(stop)
     this.getLatestIncident(stop)
-    this.getRelationAverage(stop)
     this.onSelect({name: "Heurt d'une personne", value: 1}) // => changer ça mais je sais pas par quoi
     this._params.incidentParamsInUrl({stop: stop, selectedDate: this.todaysDate.toISOString()})
     this.incidentPieGraph = pieChartIncidentTypes // => fake db
@@ -259,47 +258,47 @@ export class ProblemeComponent {
   }
 
   // Moyenne de retard / relation
-  getRelationAverage(stop: string = this.departControl.value){
-    this.relationArrivalAverage = 0
-    this.relationDepartureAverage = 0
-    let relationStats: any[] = []
-    let stopStats: any[] = []
-    let commonRelation = ""
+  // getRelationAverage(stop: string = this.departControl.value){
+  //   this.relationArrivalAverage = 0
+  //   this.relationDepartureAverage = 0
+  //   let relationStats: any[] = []
+  //   let stopStats: any[] = []
+  //   let commonRelation = ""
 
-    this._ponctualiteService.getPonctualityByStop(stop).subscribe({
-      next: (data) => {
-        commonRelation = data[0].relation.split(":", 1).toString()
+  //   this._ponctualiteService.getPonctualityByStop(stop).subscribe({
+  //     next: (data) => {
+  //       commonRelation = data[0].relation.split(":", 1).toString()
 
-        for(let item of data){
-          stopStats.push(item)
-        }
-      },
-      error: (err) => {
-        console.log(err);
-      }
-    })
+  //       for(let item of data){
+  //         stopStats.push(item)
+  //       }
+  //     },
+  //     error: (err) => {
+  //       console.log(err);
+  //     }
+  //   })
 
-    this._ponctualiteService.getPonctuality().subscribe({
-      next: (data) => {
-        for(let item of data){
-          if(item.relation.split(":", 1) == commonRelation){
-            relationStats.push(item)
-          }
-        }
-        let iterations = 0
-        for(let item of relationStats){
-          this.relationArrivalAverage += item.retard_arr
-          this.relationDepartureAverage += item.retard_dep
-          iterations ++
-        }
-        this.relationArrivalAverage = this.relationArrivalAverage / iterations
-        this.relationDepartureAverage = this.relationDepartureAverage / iterations
-      },
-      error: (err) => {
-        console.log(err)
-      }
-    })
-  }
+  //   this._ponctualiteService.getPonctuality().subscribe({
+  //     next: (data) => {
+  //       for(let item of data){
+  //         if(item.relation.split(":", 1) == commonRelation){
+  //           relationStats.push(item)
+  //         }
+  //       }
+  //       let iterations = 0
+  //       for(let item of relationStats){
+  //         this.relationArrivalAverage += item.retard_arr
+  //         this.relationDepartureAverage += item.retard_dep
+  //         iterations ++
+  //       }
+  //       this.relationArrivalAverage = this.relationArrivalAverage / iterations
+  //       this.relationDepartureAverage = this.relationDepartureAverage / iterations
+  //     },
+  //     error: (err) => {
+  //       console.log(err)
+  //     }
+  //   })
+  // }
 
   onSelect(incident: DataFormat){
     this._incidentService.getIncidents().subscribe({
