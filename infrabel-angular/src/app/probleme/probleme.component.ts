@@ -42,7 +42,7 @@ export class ProblemeComponent {
   filterredOption : Observable<string[]> = EMPTY
 
   showResult = false
-  showError = true
+  showError = false
 
   averageDelayArrivalInSeconds: number = 0
   averageDelayArrivalInTime: TimeFormat = {hours: 0, minutes: 0, seconds: 0}
@@ -123,19 +123,21 @@ export class ProblemeComponent {
     this.selectedStop = stop
     this.lastMonthDate = new Date(this.todaysDate.getMonth() == 0 ? this.todaysDate.getFullYear() - 1 : this.todaysDate.getFullYear(), this.todaysDate.getMonth() == 0 ? 11 : this.todaysDate.getMonth() - 1, this.todaysDate.getDate())
 
-    // if(stop == undefined){
-    //   this.showError = true
-    //   setTimeout(() => {
-    //     this.showError = false
-    //   }, 3000)
-    // }
+    if(stop == undefined){
+      this.showError = true
+      setTimeout(() => {
+        this.showError = false
+      }, 3000)
+    }
+    this._params.incidentParamsInUrl({stop: stop, selectedDate: this.todaysDate.toISOString()})
+
     this.getAverageDelay(stop)
     this.getIncidentStats(stop)
     this.getLatestIncident(stop)
-    this.onSelect({name: "Heurt d'une personne", value: 1}) // => changer ça mais je sais pas par quoi
-    this._params.incidentParamsInUrl({stop: stop, selectedDate: this.todaysDate.toISOString()})
-    this.incidentPieGraph = pieChartIncidentTypes // => fake db
-    this.overallIncidentsBarGraph = barChartDelayByIncident // => fake db
+    // this.onSelect({name: "Heurt d'une personne", value: 1}) // => changer ça mais je sais pas par quoi
+
+    this.incidentPieGraph = pieChartIncidentTypes // => fake db, à supprimer
+    this.overallIncidentsBarGraph = barChartDelayByIncident // => fake db, à supprimer
 
     this.showResult = true
   }
@@ -156,22 +158,25 @@ export class ProblemeComponent {
 
   // Incidents / arrêt
   getIncidentStats(stop: string = this.departControl.value){
+    // Réinitialisation des valeurs
     this.nbIncident = 0
-    for(let item of this.monthlyDelayLineGraph){
-      item.series = []
-    }
     this.nbRetardTotal = 0
     this.nbTrainsSuppTotal = 0
     this.plusGrosRetard = 0
 
+    for(let item of this.monthlyDelayLineGraph){
+      item.series = []
+    }
+
+    // Graphique en ligne des retards du mois + plus gros retard
     this._incidentService.getIncidentByPlace(stop).subscribe({
       next: (datas : IncidentData[]) => {
-
         for(let obj of datas){
           let incidentDate = new Date(obj.date_incident)
 
-          if(incidentDate < this.todaysDate || incidentDate > this.lastMonthDate){
+          if(incidentDate <= this.todaysDate && incidentDate >= this.lastMonthDate){
             this.nbIncident++
+
               this.monthlyDelayLineGraph[0].series.push(
                 {
                   value: obj.retard_minutes,
@@ -210,10 +215,11 @@ export class ProblemeComponent {
             )
           }
           else{
-            incidentIsInGraph.value++
+            incidentIsInGraph.value++ // => checker ici si ça fonctionne bien avec les vraies données
           }
         }
-        this.monthlyDelayLineGraph = data // => fake db
+        this.monthlyDelayLineGraph = data // => fake db, à supprimer
+        this.onSelect(this.incidentPieGraph[0])
 
       },
       error: (err) => {
@@ -286,10 +292,11 @@ export class ProblemeComponent {
     this._incidentService.getIncidents().subscribe({
       next: (data: IncidentData[]) => {
         this.selectedIncidentType = incident.name
+
         for(let item of data){
           let itemDate = new Date(item.date_incident)
 
-          if(incident.name == item.type_incident && itemDate > this.lastMonthDate && itemDate < this.todaysDate){
+          if(this.selectedIncidentType == item.type_incident && itemDate >= this.lastMonthDate && itemDate <= this.todaysDate){
             this.overallIncidentsBarGraph.push({
               name: item.date_incident.toString(),
               value: item.retard_minutes
