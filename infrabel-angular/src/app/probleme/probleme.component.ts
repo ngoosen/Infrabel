@@ -42,7 +42,7 @@ export class ProblemeComponent {
   filterredOption : Observable<string[]> = EMPTY
 
   showResult = false
-  showError = false
+  showError = true
 
   averageDelayArrivalInSeconds: number = 0
   averageDelayArrivalInTime: TimeFormat = {hours: 0, minutes: 0, seconds: 0}
@@ -103,7 +103,6 @@ export class ProblemeComponent {
     })
 
     // Read params
-
     this._router.queryParamMap.subscribe((params: any) => {
       if(params.params.date != undefined){
         this.todaysDate = new Date(params.params.date)
@@ -124,12 +123,12 @@ export class ProblemeComponent {
     this.selectedStop = stop
     this.lastMonthDate = new Date(this.todaysDate.getMonth() == 0 ? this.todaysDate.getFullYear() - 1 : this.todaysDate.getFullYear(), this.todaysDate.getMonth() == 0 ? 11 : this.todaysDate.getMonth() - 1, this.todaysDate.getDate())
 
-    if(stop == undefined){
-      this.showError = true
-      setTimeout(() => {
-        this.showError = false
-      }, 3000)
-    }
+    // if(stop == undefined){
+    //   this.showError = true
+    //   setTimeout(() => {
+    //     this.showError = false
+    //   }, 3000)
+    // }
     this.getAverageDelay(stop)
     this.getIncidentStats(stop)
     this.getLatestIncident(stop)
