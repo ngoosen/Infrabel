@@ -10,7 +10,7 @@ export class InstantService {
 
   // Renvoie tous les moments de la journée
   getInstants(){
-    return this._http.get<any>("http://localhost:3000/api/v1/instants")
+    return this._http.get<InstantData[]>("http://localhost:3000/api/v1/instants")
   }
 
   // Renvoie le moment de la journée correspondant à l'id
