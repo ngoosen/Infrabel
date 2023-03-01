@@ -133,9 +133,10 @@ Datej_1:Date=new Date()
     this.InfoMoiGraph=data
     this.showResult = true;
     this.PonctualiteByStop()
-    this.donneGraph()
+    // this.donneGraph()
     this.dataLigne()
     this.onValueChanged()
+    this.PoncutaliteAnnuelle()
 
   }
 
