@@ -92,6 +92,17 @@ const PonctualiteJModel = {
             "JOIN dates d ON d.id_date = t.FK_date " +
         "WHERE a.nom_arret = '" + stop + "'")
         })
+    },
+    getAverageByStop: (stop) => {
+        return dbConnect.then((conn) => {
+            return conn.query(
+                "SELECT AVG(t.retard_arrivee) AS moyenne_arrivee, " +
+                    "AVG(t.retard_depart) AS moyenne_depart " +
+                "FROM trajet_J_1 t " +
+                "JOIN arret a ON t.FK_arret = a.id_arret " +
+                "WHERE a.nom_arret = '" + stop + "'"
+            )
+        })
     }
 }
 

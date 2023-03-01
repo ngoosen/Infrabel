@@ -10,7 +10,7 @@ import { DataFormat, FormatDataService, GroupedDataFormat, TimeFormat } from '..
 import { IncidentData, IncidentService } from '../services/incident.service';
 import { LigneArretService } from '../services/ligne-arret.service';
 import { IncidentParams, ParamsInUrlService } from '../services/params-in-url.service';
-import { PonctualiteJ1Service } from '../services/ponctualite-j1.service';
+import { AverageJ1Data, PonctualiteJ1Service } from '../services/ponctualite-j1.service';
 import { barChartDelayByIncident, data, pieChartIncidentTypes } from './fakedb';
 
 @Component({
@@ -105,8 +105,6 @@ export class ProblemeComponent {
     // Read params
 
     this._router.queryParamMap.subscribe((params: any) => {
-      console.log(params);
-
       if(params.params.date != undefined){
         this.todaysDate = new Date(params.params.date)
       }
@@ -123,8 +121,6 @@ export class ProblemeComponent {
 
   // Button onClick
   getData(stop: string = this.departControl.value){
-    console.log(stop);
-
     this.selectedStop = stop
     this.lastMonthDate = new Date(this.todaysDate.getMonth() == 0 ? this.todaysDate.getFullYear() - 1 : this.todaysDate.getFullYear(), this.todaysDate.getMonth() == 0 ? 11 : this.todaysDate.getMonth() - 1, this.todaysDate.getDate())
 
@@ -141,31 +137,17 @@ export class ProblemeComponent {
     this._params.incidentParamsInUrl({stop: stop, selectedDate: this.todaysDate.toISOString()})
     this.incidentPieGraph = pieChartIncidentTypes // => fake db
     this.overallIncidentsBarGraph = barChartDelayByIncident // => fake db
-    this.monthlyDelayLineGraph = data // => fake db
+
     this.showResult = true
   }
 
   // Moyenne de retard / arrêt
   getAverageDelay(stop: string = this.departControl.value){
-    this._ponctualiteService.getPonctualityByStop(stop).subscribe({
-      next: (data) => {
-        this.averageDelayArrivalInSeconds = 0
-        this.averageDelayDepartureInSeconds = 0
-        let iterations = 0
-
-        // moyenne en secondes
-        for(let obj of data){
-          this.averageDelayArrivalInSeconds += obj.retard_arr
-          this.averageDelayDepartureInSeconds += obj.retard_dep
-          iterations ++
-        }
-
-        this.averageDelayArrivalInSeconds = this.averageDelayArrivalInSeconds / iterations
-        this.averageDelayDepartureInSeconds = this.averageDelayDepartureInSeconds / iterations
-
+    this._ponctualiteService.getAveragePonctualityByStop(stop).subscribe({
+      next: (data: AverageJ1Data[]) => {
         // formatage de la moyenne en heures, minutes et secondes
-        this.averageDelayArrivalInTime = this._format.formatTime(this.averageDelayArrivalInSeconds)
-        this.averageDelayDepartureInTime = this._format.formatTime(this.averageDelayDepartureInSeconds)
+        this.averageDelayArrivalInTime = this._format.formatTime(data[0].moyenne_arrivee)
+        this.averageDelayDepartureInTime = this._format.formatTime(data[0].moyenne_depart)
       },
       error: (err) => {
         console.log("Erreur: " + err);
@@ -184,9 +166,9 @@ export class ProblemeComponent {
     this.plusGrosRetard = 0
 
     this._incidentService.getIncidentByPlace(stop).subscribe({
-      next: (data : IncidentData[]) => {
+      next: (datas : IncidentData[]) => {
 
-        for(let obj of data){
+        for(let obj of datas){
           let incidentDate = new Date(obj.date_incident)
 
           if(incidentDate < this.todaysDate || incidentDate > this.lastMonthDate){
@@ -217,7 +199,7 @@ export class ProblemeComponent {
         }
 
         // Faire en sorte de remplir le pie chart qui reprend les différents types d'incidents par nb dudit type d'incident
-        for(let item of data){
+        for(let item of datas){
           let incidentIsInGraph = this.incidentPieGraph.find(inc => inc.name == item.type_incident)
 
           if(incidentIsInGraph == undefined){
@@ -232,6 +214,7 @@ export class ProblemeComponent {
             incidentIsInGraph.value++
           }
         }
+        this.monthlyDelayLineGraph = data // => fake db
 
       },
       error: (err) => {

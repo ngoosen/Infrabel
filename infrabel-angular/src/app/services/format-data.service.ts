@@ -8,7 +8,7 @@ export class FormatDataService {
   constructor() { }
 
   // Formatage de secondes en heures, minutes et secondes
-  formatTime(seconds: number){
+  formatTime(seconds: number): TimeFormat{
     let leftOutSeconds = seconds % 60
 
     let minutes = seconds - leftOutSeconds
