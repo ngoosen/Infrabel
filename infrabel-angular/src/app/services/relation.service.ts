@@ -10,12 +10,12 @@ export class RelationService {
 
   // Renvoie tous les relations
   getRelations(){
-    return this._http.get<any>("http://localhost:3000/api/v1/relations")
+    return this._http.get<RelationData[]>("http://localhost:3000/api/v1/relations")
   }
 
   // Renvoie la relation correspondant à l'id
   getOneRelation(id: number){
-    return this._http.get<any>("http://localhost:3000/api/v1/relations/" + id)
+    return this._http.get<RelationData[]>("http://localhost:3000/api/v1/relations/" + id)
   }
 }
 export interface RelationData{

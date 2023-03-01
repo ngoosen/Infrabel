@@ -4,7 +4,7 @@ import { withPreloading } from '@angular/router';
 import { EMPTY, Observable} from 'rxjs';
 import { map,startWith } from 'rxjs';
 import { __values } from 'tslib';
-import { LigneArretService } from '../services/ligne-arret.service';
+import { LigneArretData, LigneArretService } from '../services/ligne-arret.service';
 import {InstantService} from'../services/instant.service';
 import { PonctualiteJ1Service,PonctualiteJ1Data} from '../services/ponctualite-j1.service';
 import {PonctualiteMomentData, PonctualiteMomentService }from '../services/ponctualite-moment.service'
@@ -38,7 +38,7 @@ export class PonctualiteComponent implements OnInit {
   ponctualite:number = 0
   retard:number = 0
   dateponct: Date = new Date()
-  ligne:string[]=[]
+  ligne:LigneArretData[]=[] ///////////////////////// <= ADRIANO J'AI MODIFIE CA => "ligne:string[]=[]" devient "ligne:LigneArretData[]=[]"
   dateGraph:Date = new Date()
   retardgraph: number=0
   tauxgraph:number=0
@@ -175,12 +175,12 @@ donneGraph(){
   });
 }
 
-      //   Renvoie tous les liens entre les lignes et les arrêts.
+  //   Renvoie tous les liens entre les lignes et les arrêts sous forme de tableau qui contient les lignes et les arrêts associés
   dataLigne(){
     this._ligneArretService.getLineStops().subscribe({
      next:(datas)=>{
        for(let item of datas){
-         this.ligne.push(item)
+         this.ligne.push(item) //////////////// <= ADRIANO C'EST ICI QUE T'UTILISE LA VARIABLE QUE J'AI MODIFIE
        }
      },
      error: (err) => {

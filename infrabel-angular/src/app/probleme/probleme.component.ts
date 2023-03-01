@@ -10,7 +10,7 @@ import { DataFormat, FormatDataService, GroupedDataFormat, TimeFormat } from '..
 import { IncidentData, IncidentService } from '../services/incident.service';
 import { LigneArretService } from '../services/ligne-arret.service';
 import { IncidentParams, ParamsInUrlService } from '../services/params-in-url.service';
-import { PonctualiteJ1Service } from '../services/ponctualite-j1.service';
+import { AverageJ1Data, PonctualiteJ1Service } from '../services/ponctualite-j1.service';
 import { barChartDelayByIncident, data, pieChartIncidentTypes } from './fakedb';
 
 @Component({
@@ -144,7 +144,7 @@ export class ProblemeComponent {
   // Moyenne de retard / arrêt
   getAverageDelay(stop: string = this.departControl.value){
     this._ponctualiteService.getAveragePonctualityByStop(stop).subscribe({
-      next: (data) => {
+      next: (data: AverageJ1Data[]) => {
         // formatage de la moyenne en heures, minutes et secondes
         this.averageDelayArrivalInTime = this._format.formatTime(data[0].moyenne_arrivee)
         this.averageDelayDepartureInTime = this._format.formatTime(data[0].moyenne_depart)

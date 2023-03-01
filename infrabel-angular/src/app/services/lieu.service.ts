@@ -15,17 +15,17 @@ export class LieuService {
 
   // Renvoie le lieu correspondant à l'id
   getOnePlace(id: number){
-    return this._http.get<any>("http://localhost:3000/api/v1/lieux/" + id)
+    return this._http.get<LieuData[]>("http://localhost:3000/api/v1/lieux/" + id)
   }
 
   // Renvoie tous les lieux dans la langue entrée
   getPlacesByLanguage(language: string){
-    return this._http.get<any>("http://localhost:3000/api/v1/lieux/" + language)
+    return this._http.get<LieuData[]>("http://localhost:3000/api/v1/lieux/" + language)
   }
 
   // Renvoie le lieu correspondant à l'id dans la langue entrée
   getPlaceByIDLanguage(id: number, language: string){
-    return this._http.get<any>("http://localhost:3000/api/v1/lieux/" + id + "/" + language)
+    return this._http.get<LieuData[]>("http://localhost:3000/api/v1/lieux/" + id + "/" + language)
   }
 }
 export interface LieuData{

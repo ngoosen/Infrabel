@@ -15,19 +15,19 @@ export class InstantService {
 
   // Renvoie le moment de la journée correspondant à l'id
   getOneInstant(id: number){
-    return this._http.get<any>("http://localhost:3000/api/v1/instants/" + id)
+    return this._http.get<InstantData[]>("http://localhost:3000/api/v1/instants/" + id)
   }
 
   // Renvoie tous les moments de la journée, triés par langue
   // language = "nl", "fr" ou "en"
   getInstantsByLanguage(language: string){
-    return this._http.get<any>("http://localhost:3000/api/v1/instants/" + language)
+    return this._http.get<InstantData[]>("http://localhost:3000/api/v1/instants/" + language)
   }
 
   // Renvoie le moment de la journée correspondant à l'id entrée, dans la langue entrée
   // language = "nl", "fr" ou "en"
   getInstantByIDLanguage(id: number, language: string){
-    return this._http.get<any>("http://localhost:3000/api/v1/instants/" + id + "/" + language)
+    return this._http.get<InstantData[]>("http://localhost:3000/api/v1/instants/" + id + "/" + language)
   }
 }
 export interface InstantData{
