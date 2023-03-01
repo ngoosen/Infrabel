@@ -31,11 +31,11 @@
 
           <h2>La ponctualité pour arrivé {{arriveeControl.value}}</h2>
                <!-- bouton radio pour instant de la journée -->
-               <!-- <div class="instant">
+               <div class="instant">
                 <mat-radio-button  *ngFor="let item of instant"  [value]="item">
                   <option>{{item}}</option>
                 </mat-radio-button>
-             </div> -->
+             </div>
           <div class="résultat">
           <div class="hautgauche">
 
@@ -55,10 +55,10 @@
            </ngx-charts-line-chart>
           </div>
     </div>
-    <h3>Donnée annuelle </h3>
+    <h3>Donnée annuelle de la gare de {{arriveeControl.value}} </h3>
     <div class="select">
       <label>Choisissez les données que vous voulez : </label><br>
-<select name="type"id="type" [(ngModel)]="selectedValue" (change)="onValueChanged()">
+<select name="type"id="type" [(ngModel)]="selectedValue" (change)="onValueChanged">
   <option value="">--Faite votre choix--
 </option>
     <option value="tauxgraph">chance d'arriver a l'heure en %</option>
@@ -67,10 +67,10 @@
 </select>
 
     </div>
- <div class="graph2">
+ <div class="graph2" style="height: 700px;">
 
   <ngx-charts-bar-vertical *ngIf="showGraph"
-       [results]="fakeDb"
+       [results]="monthlyData"
     [yAxis]="true"
     [xAxis]="true"
     [showDataLabel]="true"

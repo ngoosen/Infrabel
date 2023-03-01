@@ -55,7 +55,6 @@ export class PonctualiteComponent implements OnInit {
   showGraph:boolean=true
 
   todaysDate : Date = new Date("2023-02-01")
-  lastMonthDate: Date = new Date(this.todaysDate.getMonth() == 0 ? this.todaysDate.getFullYear() - 1 : this.todaysDate.getFullYear(), this.todaysDate.getMonth() == 0 ? 11 : this.todaysDate.getMonth() - 1, this.todaysDate.getDate())
 //
   fakeDb:any
 fakeDbMinRe=Nbrminuteretard
@@ -129,13 +128,14 @@ Datej_1:Date=new Date()
 
   //fonction déclenchée par le bouton recherche
   showValues() {
-    this.lastMonthDate = new Date(this.todaysDate.getMonth() == 0 ? this.todaysDate.getFullYear() - 1 : this.todaysDate.getFullYear(), this.todaysDate.getMonth() == 0 ? 11 : this.todaysDate.getMonth() - 1, this.todaysDate.getDate())
+
     this.InfoMoiGraph=data
     this.showResult = true;
     this.PonctualiteByStop()
     this.donneGraph()
     this.dataLigne()
     this.onValueChanged()
+    this.PoncutaliteAnnuelle()
 
   }
 
@@ -189,45 +189,45 @@ donneGraph(){
    })
   }
 
-  graphRetard(){
-    this._Ponctualite.getOnePonctuality(this.departControl.value).subscribe({
-      next:(data:PonctualiteMomentData[])=>{
-         for(let objet of data){
-          this.dateGraph= new Date(objet.date)
-          this.retardgraph=objet.min_de_retard
+//   graphRetard(){
+//     this._Ponctualite.getOnePonctuality(this.departControl.value).subscribe({
+//       next:(data:PonctualiteMomentData[])=>{
+//          for(let objet of data){
+//           this.dateGraph= new Date(objet.date)
+//           this.retardgraph=objet.min_de_retard
 
-      }
-      },
-      error: (err) => {
-        console.log(err);
-      }
+//       }
+//       },
+//       error: (err) => {
+//         console.log(err);
+//       }
 
-    })
-  }
+//     })
+//   }
 
 
 
-  graphtaux(){
-    this._Ponctualite.getOnePonctuality(this.departControl.value).subscribe({
-      next:(data:PonctualiteMomentData[])=>{
-         for(let objet of data){
-          this.dateGraph= new Date(objet.date)
-          this.tauxgraph=objet.ponctualite_pourcentage
-      }
-      }
-    })
-}
+//   graphtaux(){
+//     this._Ponctualite.getOnePonctuality(this.departControl.value).subscribe({
+//       next:(data:PonctualiteMomentData[])=>{
+//          for(let objet of data){
+//           this.dateGraph= new Date(objet.date)
+//           this.tauxgraph=objet.ponctualite_pourcentage
+//       }
+//       }
+//     })
+// }
 
-graphminderetard(){
-  this._Ponctualite.getOnePonctuality(this.departControl.value).subscribe({
-    next:(data:PonctualiteMomentData[])=>{
-       for(let objet of data){
-        this.dateGraph= new Date(objet.date)
-        this.trainmoins6=objet.nb_train_inferieur_6_min
-    }
-    }
-  })
-}
+// graphminderetard(){
+//   this._Ponctualite.getOnePonctuality(this.departControl.value).subscribe({
+//     next:(data:PonctualiteMomentData[])=>{
+//        for(let objet of data){
+//         this.dateGraph= new Date(objet.date)
+//         this.trainmoins6=objet.nb_train_inferieur_6_min
+//     }
+//     }
+//   })
+// }
 
 
 monthlyData: DataFormat[] = [];
@@ -235,11 +235,12 @@ destinationIc:string=""
 tauxponctualiteIc:number=0
 trainmoins6Ic:number=0
 minuteretardIc:number=0
-
+selectedValue: string = "trainmoins6"
 
 PoncutaliteAnnuelle(){
-  this._Ponctualite.getByStop(this.arriveeControl.value).subscribe({
+  this._Ponctualite.getByStop(this.departControl.value).subscribe({
       next:(data:PonctualiteMomentData[])=>{
+        this.monthlyData = []
 
         for(let objet of data){
 
@@ -248,7 +249,8 @@ PoncutaliteAnnuelle(){
           let tempPonct = this.monthlyData.find(ponc => ponc.name == objet.date.toString())
 
           if(tempPonct == undefined){
-            if(tempDate.getFullYear() == this.todaysDate.getFullYear()){
+
+             if(tempDate.getFullYear() == this.todaysDate.getFullYear()){
               switch (this.selectedValue) {
                 case 'trainmoins6':
                   this.monthlyData.push({
@@ -269,36 +271,36 @@ PoncutaliteAnnuelle(){
                   })
                 break
                 default:
-                  this.showGraph=false
 
                 break;
               }
             }
-          }
+           }
           else{
+            console.log(tempPonct);
+
+            let index = this.monthlyData.indexOf(tempPonct)
             switch (this.selectedValue) {
               case 'trainmoins6':
-                tempPonct.value+= objet.nb_train_inferieur_6_min
+                this.monthlyData[index].value+= objet.nb_train_inferieur_6_min
                 break;
               case 'retardgraph':
-                tempPonct.value += objet.min_de_retard
-              break
+                this.monthlyData[index].value += objet.min_de_retard
+                break
               case 'tauxgraph':
-                tempPonct.value += objet.ponctualite_pourcentage
-              break
+                this.monthlyData[index].value += objet.ponctualite_pourcentage
+                break
               default:
-                      this.showGraph=false
 
                 break;
             }
           }
 
-
-
-        // this.trainmoins6Ic=objet.nb_train_inferieur_6_min
-        // this.tauxponctualiteIc=objet.ponctualite_pourcentage
-        // this.minuteretardIc=objet.min_de_retard
-      }
+          // this.trainmoins6Ic=objet.nb_train_inferieur_6_min
+          // this.tauxponctualiteIc=objet.ponctualite_pourcentage
+          // this.minuteretardIc=objet.min_de_retard
+        }
+        this.showGraph = true
       }
   })
 
@@ -306,7 +308,6 @@ PoncutaliteAnnuelle(){
 
 
 
-selectedValue: any
 
 onValueChanged() {
   this.showGraph=true

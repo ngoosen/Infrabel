@@ -54,16 +54,16 @@ const PonctualiteMomentModel = {
             "p.ponctualite_pourcentage, " +
             "p.nb_train_inferieur_6_min, " +
             "p.min_de_retard, " +
-            "d.id_date AS [Date], " + 
-            "a.nom_arret AS [Destination], " + 
-            "i.fr_instant AS [Moment de la journée], " + 
+            "d.id_date AS date, " + 
+            "a.nom_arret AS destination, " + 
+            "i.fr_instant AS instant, " + 
             "r.code_relation + ': ' + " +
             "(SELECT arr.nom_arret " +
                 "FROM arret arr " +
                 "WHERE r.FK_gare_1 = arr.id_arret) + ' - ' + " +
             "(SELECT ar.nom_arret " +
                 "FROM arret ar " +
-                "WHERE r.FK_gare_2 = ar.id_arret) AS [Relation] " +
+                "WHERE r.FK_gare_2 = ar.id_arret) AS relation " +
         "FROM ponctualite_IC_moment p " +
             "JOIN dates d ON p.FK_date_ponctualite_IC_moment = d.id_date " +
             "JOIN arret a ON p.FK_destination = a.id_arret " +
