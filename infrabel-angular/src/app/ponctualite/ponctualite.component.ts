@@ -194,88 +194,86 @@ donneGraph(){
 
 
 
-// monthlyData: DataFormat[] = [];
-// destinationIc:string=""
-// tauxponctualiteIc:number=0
-// trainmoins6Ic:number=0
-// minuteretardIc:number=0
-// selectedValue: string = "trainmoins6"
-// selectedInstant:string="matin"
+monthlyData: DataFormat[] = [];
+destinationIc:string=""
+tauxponctualiteIc:number=0
+trainmoins6Ic:number=0
+minuteretardIc:number=0
+selectedValue: string = "trainmoins6"
+selectedInstant:string="matin"
 
 
-// PoncutaliteAnnuelle(){
-//   this._Ponctualite.getByStop(this.departControl.value).subscribe({
-//       next:(data:PonctualiteMomentData[])=>{
-//         this.monthlyData = []
+PoncutaliteAnnuelle(){
+  this._Ponctualite.getByStopInstant(this.departControl.value, this.selectedInstant).subscribe({
+      next:(data:PonctualiteMomentData[])=>{
+        this.monthlyData = []
 
-//         for(let objet of data){
+        for(let objet of data){
 
-//           let tempDate = new Date(objet.date)
+          let tempDate = new Date(objet.date)
 
-//           let tempPonct = this.monthlyData.find(ponc => ponc.name == objet.date.toString())
+          let tempPonct = this.monthlyData.find(ponc => ponc.name == objet.date.toString())
 
-//           if(tempPonct == undefined){
+          if(tempPonct == undefined){
 
-//              if(tempDate.getFullYear() == this.todaysDate.getFullYear()){
-//               this.showGraph=false
+             if(tempDate.getFullYear() == this.todaysDate.getFullYear()){
+              this.showGraph=false
 
-//               switch (this.selectedValue) {
-//                 case 'trainmoins6':
-//                   this.monthlyData.push({
-//                     name: tempDate.toString(),
-//                     value: objet.nb_train_inferieur_6_min
-//                   })
-//                 break;
-//                 case 'retardgraph':
-//                   this.monthlyData.push({
-//                     name: tempDate.toString(),
-//                     value: objet.min_de_retard
-//                   })
-//                 break
-//                 case 'tauxgraph':
-//                   this.monthlyData.push({
-//                     name: tempDate.toString(),
-//                     value: objet.ponctualite_pourcentage
-//                   })
-//                 break
-//                 default:
+              switch (this.selectedValue) {
+                case 'trainmoins6':
+                  this.monthlyData.push({
+                    name: tempDate.toString(),
+                    value: objet.nb_train_inferieur_6_min
+                  })
+                break;
+                case 'retardgraph':
+                  this.monthlyData.push({
+                    name: tempDate.toString(),
+                    value: objet.min_de_retard
+                  })
+                break
+                case 'tauxgraph':
+                  this.monthlyData.push({
+                    name: tempDate.toString(),
+                    value: objet.ponctualite_pourcentage
+                  })
+                break
+                default:
 
-//                 break;
+                break;
 
-//               }
-//               this.showGraph=true
-//             }
-//            }
-//           else{
-//             console.log(tempPonct);
-//             this.showGraph=false
-//             let index = this.monthlyData.indexOf(tempPonct)
-//             switch (this.selectedValue) {
-//               case 'trainmoins6':
-//                 this.monthlyData[index].value+= objet.nb_train_inferieur_6_min
-//                 break;
-//               case 'retardgraph':
-//                 this.monthlyData[index].value += objet.min_de_retard
-//                 break
-//               case 'tauxgraph':
-//                 this.monthlyData[index].value += objet.ponctualite_pourcentage
-//                 break
-//               default:
+              }
+              this.showGraph=true
+            }
+           }
+          else{
+            console.log(tempPonct);
+            this.showGraph=false
+            let index = this.monthlyData.indexOf(tempPonct)
+            switch (this.selectedValue) {
+              case 'trainmoins6':
+                this.monthlyData[index].value+= objet.nb_train_inferieur_6_min
+                break;
+              case 'retardgraph':
+                this.monthlyData[index].value += objet.min_de_retard
+                break
+              case 'tauxgraph':
+                this.monthlyData[index].value += objet.ponctualite_pourcentage
+                break
+              default:
 
-//                 break;
-//             }
-//             this.showGraph=true
-//           }
+                break;
+            }
+            this.showGraph=true
+          }
 
-//           // this.trainmoins6Ic=objet.nb_train_inferieur_6_min
-//           // this.tauxponctualiteIc=objet.ponctualite_pourcentage
-//           // this.minuteretardIc=objet.min_de_retard
-//         }
-//         this.showGraph = true
-//       }
-//   })
 
-// }
+        }
+        this.showGraph = true
+      }
+  })
+
+}
 
 averageDelayArrivalInSeconds: number = 0
 averageDelayArrivalInTime1: TimeFormat = {hours: 0, minutes: 0, seconds: 0}
@@ -328,217 +326,4 @@ getj_1Graph(stop:string=this.departControl.value){
   }
 
 
-
-
-
-
-
-
-
-
-
-
-
-// onValueChanged() {
-//   this.showGraph=true
-//   switch (this.selectedValue) {
-//     case 'tauxgraph':
-//       // définir les données pour le graphique "chance d'arriver a l'heure"
-//       name:'chance d etre a l heure'
-//       this.fakeDb=this.fakeDbpourc
-
-//       break;
-//     case 'retardgraph':
-//       // définir les données pour le graphique "Nombre de minute de retard"
-//       name:"Minute de retard"
-//       this.fakeDb = this.fakeDbMinRe
-
-//       break;
-//     case 'trainmoins6':
-//       // définir les données pour le graphique "Train moins de 6 minute de retard"
-//       name:"train moins de 6 minutes de retard"
-//       this.fakeDb = this.trainmoins6
-
-//       break;
-//     default:
-//       this.showGraph=false
-// }
-// }
-
-
-
-
-
-
-monthlyData: DataFormat[] = [];
-destinationIc:string=""
-tauxponctualiteIc:number=0
-trainmoins6Ic:number=0
-minuteretardIc:number=0
-selectedValue: string = "trainmoins6"
-selectedInstant:string="matin"
-
-
-
-
-
-PoncutaliteAnnuelle(){
-  this._Ponctualite.getByStop(this.departControl.value).subscribe({
-      next:(data:PonctualiteMomentData[])=>{
-        this.monthlyData = []
-
-        for(let objet of data){
-
-          let tempDate = new Date(objet.date)
-
-          let tempPonct = this.monthlyData.find(ponc => ponc.name == objet.date.toString())
-
-          this.selectedInstant=objet.instant
-
-          if(tempPonct == undefined){
-
-             if(tempDate.getFullYear() == this.todaysDate.getFullYear()){
-              this.showGraph=false
-
-              switch(this.selectedInstant){
-                case 'matin':
-                  switch (this.selectedValue) {
-                    case 'trainmoins6':
-                      this.monthlyData.push({
-                        name: tempDate.toString(),
-                        value: objet.nb_train_inferieur_6_min
-                      })
-                    break;
-                    case 'retardgraph':
-                      this.monthlyData.push({
-                        name: tempDate.toString(),
-                        value: objet.min_de_retard
-                      })
-                    break
-                    case 'tauxgraph':
-                      this.monthlyData.push({
-                        name: tempDate.toString(),
-                        value: objet.ponctualite_pourcentage
-                      })
-                    break
-                    default:
-
-                    break;
-
-                  }
-                  break
-
-                  case 'soir':
-                    switch (this.selectedValue) {
-                      case 'trainmoins6':
-                        this.monthlyData.push({
-                          name: tempDate.toString(),
-                          value: objet.nb_train_inferieur_6_min
-                        })
-                      break;
-                      case 'retardgraph':
-                        this.monthlyData.push({
-                          name: tempDate.toString(),
-                          value: objet.min_de_retard
-                        })
-                      break
-                      case 'tauxgraph':
-                        this.monthlyData.push({
-                          name: tempDate.toString(),
-                          value: objet.ponctualite_pourcentage
-                        })
-                      break
-                      default:
-
-                      break;
-
-                    }
-                    break
-
-                  case 'creuse':
-                    switch (this.selectedValue) {
-                      case 'trainmoins6':
-                        this.monthlyData.push({
-                          name: tempDate.toString(),
-                          value: objet.nb_train_inferieur_6_min
-                        })
-                      break;
-                      case 'retardgraph':
-                        this.monthlyData.push({
-                          name: tempDate.toString(),
-                          value: objet.min_de_retard
-                        })
-                      break
-                      case 'tauxgraph':
-                        this.monthlyData.push({
-                          name: tempDate.toString(),
-                          value: objet.ponctualite_pourcentage
-                        })
-                      break
-                      default:
-
-                      break;
-
-                    }
-                    break
-
-                  case 'weekends':
-                  switch (this.selectedValue) {
-                    case 'trainmoins6':
-                      this.monthlyData.push({
-                        name: tempDate.toString(),
-                        value: objet.nb_train_inferieur_6_min
-                      })
-                    break;
-                    case 'retardgraph':
-                      this.monthlyData.push({
-                        name: tempDate.toString(),
-                        value: objet.min_de_retard
-                      })
-                    break
-                    case 'tauxgraph':
-                      this.monthlyData.push({
-                        name: tempDate.toString(),
-                        value: objet.ponctualite_pourcentage
-                      })
-                    break
-                    default:
-
-                    break;
-
-                  }
-              }
-              switch (this.selectedValue) {
-                case 'trainmoins6':
-                  this.monthlyData.push({
-                    name: tempDate.toString(),
-                    value: objet.nb_train_inferieur_6_min
-                  })
-                break;
-                case 'retardgraph':
-                  this.monthlyData.push({
-                    name: tempDate.toString(),
-                    value: objet.min_de_retard
-                  })
-                break
-                case 'tauxgraph':
-                  this.monthlyData.push({
-                    name: tempDate.toString(),
-                    value: objet.ponctualite_pourcentage
-                  })
-                break
-                default:
-
-                break;
-
-              }
-              this.showGraph=true
-            }
-           }
-        }
-        this.showGraph = true
-      }
-  })
-
-}
 }
