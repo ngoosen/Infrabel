@@ -73,19 +73,12 @@
     <h3>Donnée annuelle de la gare de {{arriveeControl.value}} </h3>
     <div class="instant">
        <mat-radio-group [(ngModel)]="selectedInstant">
-      <mat-radio-button value="matin">	Pointe du matin</mat-radio-button>
+      <mat-radio-button value="matin">Pointe du matin (06H00-09h00)</mat-radio-button>
       <mat-radio-button value="creuse">Heures creuses</mat-radio-button>
-      <mat-radio-button value="soir">Pointe du soir</mat-radio-button>
-      <mat-radio-button value="weekends">Weekends</mat-radio-button>
+      <mat-radio-button value="soir">Pointe du soir(16h00-19h00)</mat-radio-button>
+      <mat-radio-button value="weekends">Samedi/dimanche</mat-radio-button>
     </mat-radio-group>
   </div>
-   <!-- </div>
-   <mat-radio-group >
-    <mat-radio-button value="">	chance d'arriver a l'heure en %</mat-radio-button>
-    <mat-radio-button value="">Nombre de minute de retard</mat-radio-button>
-    <mat-radio-button value="">train moin de 6 minute de retard</mat-radio-button>
-
-  </mat-radio-group> -->
     <div class="select">
       <label>Choisissez les données que vous voulez :  </label><br>
 <select name="type"id="type" [(ngModel)]="selectedValue" >
@@ -100,7 +93,7 @@
  <div class="graph2">
 
   <ngx-charts-bar-vertical *ngIf="showGraph"
-       [results]="monthlyData"
+    [results]="monthlyData"
     [yAxis]="true"
     [xAxis]="true"
     [showDataLabel]="true"
