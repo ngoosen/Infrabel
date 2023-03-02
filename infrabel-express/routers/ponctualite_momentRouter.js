@@ -5,5 +5,6 @@ const PonctualiteMomentController = require('../controllers/ponctualite_moment')
 PonctualiteMomentRouter.get("/", PonctualiteMomentController.getAll)
 PonctualiteMomentRouter.get("/:stop", PonctualiteMomentController.getByStop)
 PonctualiteMomentRouter.get("/:id([0-9]+)", PonctualiteMomentController.getById)
+PonctualiteMomentRouter.get("/:stop/:instant", PonctualiteMomentController.getByStopInstant)
 
 module.exports = PonctualiteMomentRouter

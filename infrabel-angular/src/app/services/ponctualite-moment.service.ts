@@ -22,6 +22,12 @@ export class PonctualiteMomentService {
   getByStop(stop: string){
     return this._http.get<PonctualiteMomentData[]>("http://localhost:3000/api/v1/ponctualite_des_relations_IC_par_moment/" + stop)
   }
+
+  // Renvoie les ponctualités par relation en fonction du stop de la relation et de l'instant de la journée
+  // instant = "matin", "soir", "creuses" ou "weekends"
+  getByStopInstant(stop: string, instant: string){
+    return this._http.get<PonctualiteMomentData[]>("http://localhost:3000/api/v1/ponctualite_des_relations_IC_par_moment/" + stop + "/" + instant)
+  }
 }
 export interface PonctualiteMomentData{
   id_ponctualite_IC_moment: number,
