@@ -6,9 +6,9 @@ import { map,startWith } from 'rxjs';
 import { __values } from 'tslib';
 import { LigneArretData, LigneArretService } from '../services/ligne-arret.service';
 import {InstantService} from'../services/instant.service';
-import { PonctualiteJ1Service,PonctualiteJ1Data} from '../services/ponctualite-j1.service';
+import { PonctualiteJ1Service,PonctualiteJ1Data, AverageJ1Data} from '../services/ponctualite-j1.service';
 import {PonctualiteMomentData, PonctualiteMomentService }from '../services/ponctualite-moment.service'
-import { DataFormat, GroupedDataFormat } from '../services/format-data.service';
+import { DataFormat, GroupedDataFormat, TimeFormat,FormatDataService } from '../services/format-data.service';
 import { data, Nbrminuteretard, tauxheureok } from './fakedb';
 
 
@@ -27,6 +27,7 @@ export class PonctualiteComponent implements OnInit {
                 private _InstantService :InstantService ,
                 private _PonctulitéMoins1: PonctualiteJ1Service,
                 private _Ponctualite:PonctualiteMomentService,
+                private _format:FormatDataService
 
 
                 ){}
@@ -63,7 +64,7 @@ fakeDbpourc=tauxheureok
 
 //
 Datej_1:Date=new Date()
-
+lastMonthDate: Date = new Date(this.todaysDate.getMonth() == 0 ? this.todaysDate.getFullYear() - 1 : this.todaysDate.getFullYear(), this.todaysDate.getMonth() == 0 ? 11 : this.todaysDate.getMonth() - 1, this.todaysDate.getDate())
 //
  InfoMoiGraph : GroupedDataFormat[] = [
     {name: "% de chance de train a l heure", series: []},
@@ -127,15 +128,16 @@ Datej_1:Date=new Date()
     }
 
   //fonction déclenchée par le bouton recherche
-  showValues() {
+  showValues(stop:string = this.departControl.value ) {
 
     this.InfoMoiGraph=data
-    this.showResult = true;
+    this.showResult=true
     this.PonctualiteByStop()
     // this.donneGraph()
     this.dataLigne()
-    this.onValueChanged()
     this.PoncutaliteAnnuelle()
+    this.getAverageDelayArrival(stop)
+    this.getAverageDelaydépart(stop)
 
   }
 
@@ -189,45 +191,183 @@ donneGraph(){
    })
   }
 
-//   graphRetard(){
-//     this._Ponctualite.getOnePonctuality(this.departControl.value).subscribe({
+
+
+
+// monthlyData: DataFormat[] = [];
+// destinationIc:string=""
+// tauxponctualiteIc:number=0
+// trainmoins6Ic:number=0
+// minuteretardIc:number=0
+// selectedValue: string = "trainmoins6"
+// selectedInstant:string="matin"
+
+
+// PoncutaliteAnnuelle(){
+//   this._Ponctualite.getByStop(this.departControl.value).subscribe({
 //       next:(data:PonctualiteMomentData[])=>{
-//          for(let objet of data){
-//           this.dateGraph= new Date(objet.date)
-//           this.retardgraph=objet.min_de_retard
+//         this.monthlyData = []
 
+//         for(let objet of data){
+
+//           let tempDate = new Date(objet.date)
+
+//           let tempPonct = this.monthlyData.find(ponc => ponc.name == objet.date.toString())
+
+//           if(tempPonct == undefined){
+
+//              if(tempDate.getFullYear() == this.todaysDate.getFullYear()){
+//               this.showGraph=false
+
+//               switch (this.selectedValue) {
+//                 case 'trainmoins6':
+//                   this.monthlyData.push({
+//                     name: tempDate.toString(),
+//                     value: objet.nb_train_inferieur_6_min
+//                   })
+//                 break;
+//                 case 'retardgraph':
+//                   this.monthlyData.push({
+//                     name: tempDate.toString(),
+//                     value: objet.min_de_retard
+//                   })
+//                 break
+//                 case 'tauxgraph':
+//                   this.monthlyData.push({
+//                     name: tempDate.toString(),
+//                     value: objet.ponctualite_pourcentage
+//                   })
+//                 break
+//                 default:
+
+//                 break;
+
+//               }
+//               this.showGraph=true
+//             }
+//            }
+//           else{
+//             console.log(tempPonct);
+//             this.showGraph=false
+//             let index = this.monthlyData.indexOf(tempPonct)
+//             switch (this.selectedValue) {
+//               case 'trainmoins6':
+//                 this.monthlyData[index].value+= objet.nb_train_inferieur_6_min
+//                 break;
+//               case 'retardgraph':
+//                 this.monthlyData[index].value += objet.min_de_retard
+//                 break
+//               case 'tauxgraph':
+//                 this.monthlyData[index].value += objet.ponctualite_pourcentage
+//                 break
+//               default:
+
+//                 break;
+//             }
+//             this.showGraph=true
+//           }
+
+//           // this.trainmoins6Ic=objet.nb_train_inferieur_6_min
+//           // this.tauxponctualiteIc=objet.ponctualite_pourcentage
+//           // this.minuteretardIc=objet.min_de_retard
+//         }
+//         this.showGraph = true
 //       }
-//       },
-//       error: (err) => {
-//         console.log(err);
-//       }
-
-//     })
-//   }
-
-
-
-//   graphtaux(){
-//     this._Ponctualite.getOnePonctuality(this.departControl.value).subscribe({
-//       next:(data:PonctualiteMomentData[])=>{
-//          for(let objet of data){
-//           this.dateGraph= new Date(objet.date)
-//           this.tauxgraph=objet.ponctualite_pourcentage
-//       }
-//       }
-//     })
-// }
-
-// graphminderetard(){
-//   this._Ponctualite.getOnePonctuality(this.departControl.value).subscribe({
-//     next:(data:PonctualiteMomentData[])=>{
-//        for(let objet of data){
-//         this.dateGraph= new Date(objet.date)
-//         this.trainmoins6=objet.nb_train_inferieur_6_min
-//     }
-//     }
 //   })
+
 // }
+
+averageDelayArrivalInSeconds: number = 0
+averageDelayArrivalInTime1: TimeFormat = {hours: 0, minutes: 0, seconds: 0}
+averageDelayDepartureInSeconds: number = 0
+averageDelayDepartureInTime1: TimeFormat = {hours: 0, minutes: 0, seconds: 0}
+
+averageDelayArrivalInTime2: TimeFormat = {hours: 0, minutes: 0, seconds: 0}
+averageDelayDepartureInTime2: TimeFormat = {hours: 0, minutes: 0, seconds: 0}
+
+getAverageDelayArrival(stop: string = this.departControl.value){
+  this._PonctulitéMoins1.getAveragePonctualityByStop(stop).subscribe({
+    next: (data: AverageJ1Data[]) => {
+      // formatage de la moyenne en heures, minutes et secondes
+      this.averageDelayArrivalInTime1 = this._format.formatTime(data[0].moyenne_arrivee)
+      this.averageDelayDepartureInTime1 = this._format.formatTime(data[0].moyenne_depart)
+    },
+    error: (err) => {
+      console.log("Erreur: " + err);
+    }
+  })
+}
+
+getAverageDelaydépart(stop:string=this.arriveeControl.value){
+  this._PonctulitéMoins1.getAveragePonctualityByStop(stop).subscribe({
+    next: (data: AverageJ1Data[]) => {
+      // formatage de la moyenne en heures, minutes et secondes
+      this.averageDelayArrivalInTime2 = this._format.formatTime(data[0].moyenne_arrivee)
+      this.averageDelayDepartureInTime2 = this._format.formatTime(data[0].moyenne_depart)
+    },
+    error: (err) => {
+      console.log("Erreur: " + err);
+    }
+  })
+}
+
+
+graphj_1 : GroupedDataFormat[] = [
+  {name: "retard arrivé", series: []},
+  {name: "retard départ", series: []}
+]
+getj_1Graph(stop:string=this.departControl.value){
+  for(let item of this.graphj_1){
+    item.series = []
+  }
+  this._PonctulitéMoins1.getPonctualityByStop(this.departControl.value).subscribe({
+    next:(data:PonctualiteJ1Data[])=>{
+
+    }
+  })
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+// onValueChanged() {
+//   this.showGraph=true
+//   switch (this.selectedValue) {
+//     case 'tauxgraph':
+//       // définir les données pour le graphique "chance d'arriver a l'heure"
+//       name:'chance d etre a l heure'
+//       this.fakeDb=this.fakeDbpourc
+
+//       break;
+//     case 'retardgraph':
+//       // définir les données pour le graphique "Nombre de minute de retard"
+//       name:"Minute de retard"
+//       this.fakeDb = this.fakeDbMinRe
+
+//       break;
+//     case 'trainmoins6':
+//       // définir les données pour le graphique "Train moins de 6 minute de retard"
+//       name:"train moins de 6 minutes de retard"
+//       this.fakeDb = this.trainmoins6
+
+//       break;
+//     default:
+//       this.showGraph=false
+// }
+// }
+
+
+
+
 
 
 monthlyData: DataFormat[] = [];
@@ -236,6 +376,11 @@ tauxponctualiteIc:number=0
 trainmoins6Ic:number=0
 minuteretardIc:number=0
 selectedValue: string = "trainmoins6"
+selectedInstant:string="matin"
+
+
+
+
 
 PoncutaliteAnnuelle(){
   this._Ponctualite.getByStop(this.departControl.value).subscribe({
@@ -248,9 +393,121 @@ PoncutaliteAnnuelle(){
 
           let tempPonct = this.monthlyData.find(ponc => ponc.name == objet.date.toString())
 
+          this.selectedInstant=objet.instant
+
           if(tempPonct == undefined){
 
              if(tempDate.getFullYear() == this.todaysDate.getFullYear()){
+              this.showGraph=false
+
+              switch(this.selectedInstant){
+                case 'matin':
+                  switch (this.selectedValue) {
+                    case 'trainmoins6':
+                      this.monthlyData.push({
+                        name: tempDate.toString(),
+                        value: objet.nb_train_inferieur_6_min
+                      })
+                    break;
+                    case 'retardgraph':
+                      this.monthlyData.push({
+                        name: tempDate.toString(),
+                        value: objet.min_de_retard
+                      })
+                    break
+                    case 'tauxgraph':
+                      this.monthlyData.push({
+                        name: tempDate.toString(),
+                        value: objet.ponctualite_pourcentage
+                      })
+                    break
+                    default:
+
+                    break;
+
+                  }
+                  break
+
+                  case 'soir':
+                    switch (this.selectedValue) {
+                      case 'trainmoins6':
+                        this.monthlyData.push({
+                          name: tempDate.toString(),
+                          value: objet.nb_train_inferieur_6_min
+                        })
+                      break;
+                      case 'retardgraph':
+                        this.monthlyData.push({
+                          name: tempDate.toString(),
+                          value: objet.min_de_retard
+                        })
+                      break
+                      case 'tauxgraph':
+                        this.monthlyData.push({
+                          name: tempDate.toString(),
+                          value: objet.ponctualite_pourcentage
+                        })
+                      break
+                      default:
+
+                      break;
+
+                    }
+                    break
+
+                  case 'creuse':
+                    switch (this.selectedValue) {
+                      case 'trainmoins6':
+                        this.monthlyData.push({
+                          name: tempDate.toString(),
+                          value: objet.nb_train_inferieur_6_min
+                        })
+                      break;
+                      case 'retardgraph':
+                        this.monthlyData.push({
+                          name: tempDate.toString(),
+                          value: objet.min_de_retard
+                        })
+                      break
+                      case 'tauxgraph':
+                        this.monthlyData.push({
+                          name: tempDate.toString(),
+                          value: objet.ponctualite_pourcentage
+                        })
+                      break
+                      default:
+
+                      break;
+
+                    }
+                    break
+
+                  case 'weekends':
+                  switch (this.selectedValue) {
+                    case 'trainmoins6':
+                      this.monthlyData.push({
+                        name: tempDate.toString(),
+                        value: objet.nb_train_inferieur_6_min
+                      })
+                    break;
+                    case 'retardgraph':
+                      this.monthlyData.push({
+                        name: tempDate.toString(),
+                        value: objet.min_de_retard
+                      })
+                    break
+                    case 'tauxgraph':
+                      this.monthlyData.push({
+                        name: tempDate.toString(),
+                        value: objet.ponctualite_pourcentage
+                      })
+                    break
+                    default:
+
+                    break;
+
+                  }
+              }
               switch (this.selectedValue) {
                 case 'trainmoins6':
                   this.monthlyData.push({
@@ -273,147 +530,15 @@ PoncutaliteAnnuelle(){
                 default:
 
                 break;
+
               }
+              this.showGraph=true
             }
            }
-          else{
-            console.log(tempPonct);
-
-            let index = this.monthlyData.indexOf(tempPonct)
-            switch (this.selectedValue) {
-              case 'trainmoins6':
-                this.monthlyData[index].value+= objet.nb_train_inferieur_6_min
-                break;
-              case 'retardgraph':
-                this.monthlyData[index].value += objet.min_de_retard
-                break
-              case 'tauxgraph':
-                this.monthlyData[index].value += objet.ponctualite_pourcentage
-                break
-              default:
-
-                break;
-            }
-          }
-
-          // this.trainmoins6Ic=objet.nb_train_inferieur_6_min
-          // this.tauxponctualiteIc=objet.ponctualite_pourcentage
-          // this.minuteretardIc=objet.min_de_retard
         }
         this.showGraph = true
       }
   })
 
 }
-
-
-
-
-onValueChanged() {
-  this.showGraph=true
-  switch (this.selectedValue) {
-    case 'tauxgraph':
-      // définir les données pour le graphique "chance d'arriver a l'heure"
-      name:'chance d etre a l heure'
-      this.fakeDb=this.fakeDbpourc
-
-      break;
-    case 'retardgraph':
-      // définir les données pour le graphique "Nombre de minute de retard"
-      name:"Minute de retard"
-      this.fakeDb = this.fakeDbMinRe
-
-      break;
-    case 'trainmoins6':
-      // définir les données pour le graphique "Train moins de 6 minute de retard"
-      name:"train moins de 6 minutes de retard"
-      this.fakeDb = this.trainmoins6
-
-      break;
-    default:
-      this.showGraph=false
 }
-}
-
-
-
-
-}
-     // le pourcentage de poncutalité
-    // this._Ponctualité.getPonctuality().subscribe({
-    //   next:(ponct)=>{
-    //     let tempPonct= ponct
-
-    //     for (let pon of tempPonct){
-    //       this.ponctualite.push(pon.ponctualite_pourcentage)
-    //     }
-    //   },
-    //   error: (err) => {
-    //     console.log(err);
-    //   }
-    // })
-
-
-  // renvoie les Donnée J-1
-//   datajmoins1(){
-//   this._PonctulitéMoins1.getPonctuality().subscribe({
-//     next:(data:PonctualiteJ1Data)=>{
-//     let donnéponct=data
-
-//     this.HeureA=donnéponct.arr_reel
-//     this.HeureD=donnéponct.dep_reel
-//     this.retardA=donnéponct.retard_arr
-//     this.retardD=donnéponct.retard_dep
-//       }
-
-//   })
-// }
-
- // ponctualite par stop j-1
-//    this._PonctulitéMoins1.getPonctualityByStop(this.departControl.value).subscribe({
-//       next: (data) => {
-
-//    for(let item of data){
-//         this.statstop.push(item)
-//         }
-//       },
-//       error: (err) => {
-//         console.log(err);
-//       }
-//     })
-
-
-// }
-
-
-// PoncutaliteAnnuelle() {
-//   const months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
-
-//   for(let month of months) {
-//     this._Ponctualite.getByStopAndMonth(this.arriveeControl.value, month).subscribe({
-//       next:(data:PonctualiteMomentData[])=>{
-
-//         for(let objet of data){
-
-//           this.trainmoins6Ic = objet.nb_train_inferieur_6_min
-//           this.tauxponctualiteIc = objet.ponctualite_pourcentage
-//           this.minuteretardIc = objet.min_de_retard
-//         }
-//       }
-//     });
-//   }
-// }
-
-// PonctualiteAnnuelle() {
-//   for (let mois = 1; mois <= 12; mois++) {
-//     this._Ponctualite.getByStopAndMonth(this.arriveeControl.value, mois).subscribe({
-//       next: (data: PonctualiteMomentData[]) => {
-//        for(let objet of data){
-
-//           this.trainmoins6Ic = objet.nb_train_inferieur_6_min
-//           this.tauxponctualiteIc = objet.ponctualite_pourcentage
-//           this.minuteretardIc = objet.min_de_retard
-//       }
-//     });
-//   }
-// }
