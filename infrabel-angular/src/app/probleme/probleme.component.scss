@@ -134,3 +134,14 @@ h4{
   padding: 5px;
   color: rgb(74, 82, 88);
 }
+.toastError{
+  text-align: center;
+  background-color: rgb(255, 229, 229);
+  padding: 10px 20px;
+  position: fixed;
+  border-radius: 10px;
+  top: 30%;
+  right: 30%;
+  // box-shadow: 0 0 5px 5px rgb(207, 207, 207);
+  border: solid red 2px;
+}
