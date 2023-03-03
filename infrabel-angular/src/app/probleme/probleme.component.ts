@@ -106,9 +106,9 @@ export class ProblemeComponent {
 
     // Read params
     this._router.queryParamMap.subscribe((params: any) => {
-      if(params.params.date != undefined){
-        this.todaysDate = new Date(params.params.date)
-      }
+      // if(params.params.date != undefined){
+      //   this.todaysDate = new Date(params.params.date)
+      // }
       if(params.params.stop != undefined){
         this.getData(params.params.stop)
       }
@@ -131,7 +131,7 @@ export class ProblemeComponent {
         this.showError = false
       }, 3000)
     }
-    this._params.incidentParamsInUrl({stop: stop, selectedDate: this.todaysDate.toISOString()})
+    this._params.incidentParamsInUrl({stop: stop})
 
     this.getAverageDelay(stop)
     this.getIncidentStats(stop)
@@ -174,7 +174,8 @@ export class ProblemeComponent {
     // Graphique en ligne des retards du mois + plus gros retard
     this._incidentService.getIncidentByPlace(stop).subscribe({
       next: (datas : IncidentData[]) => {
-        this.oldestYear = datas[0].date_incident.getFullYear()
+        let tempDate = new Date(datas[0].date_incident)
+        this.oldestYear = tempDate.getFullYear()
 
         for(let obj of datas){
           let incidentDate = new Date(obj.date_incident)
@@ -203,8 +204,8 @@ export class ProblemeComponent {
               }
           // }
         }
-        this.retardTotalTime = this._format.formatTime(this.nbRetardTotal) // service formatte les secondes et ici c'est des minutes!
-        this.plusGrosRetardTime = this._format.formatTime(this.plusGrosRetard)
+        this.retardTotalTime = this._format.formatTime(this.nbRetardTotal * 60)
+        this.plusGrosRetardTime = this._format.formatTime(this.plusGrosRetard * 60)
         this.showLineGraph = true
 
         // Faire en sorte de remplir le pie chart qui reprend les différents types d'incidents par nb dudit type d'incident
@@ -300,9 +301,8 @@ export class ProblemeComponent {
         this.selectedIncidentType = incident.name
 
         for(let item of data){
-          let itemDate = new Date(item.date_incident)
 
-          if(this.selectedIncidentType == item.type_incident && itemDate >= this.lastMonthDate && itemDate <= this.todaysDate){
+          if(this.selectedIncidentType == item.type_incident){
             this.overallIncidentsBarGraph.push({
               name: item.date_incident.toString(),
               value: item.retard_minutes

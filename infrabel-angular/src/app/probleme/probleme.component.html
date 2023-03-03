@@ -79,15 +79,16 @@
             il y a eu
           </h3> -->
           <h3>
-            Depuis {{oldestYear}}, {{departControl.value}} a connu:
+            Depuis {{oldestYear}}, {{selectedStop | titlecase}} a connu:
           </h3>
           <p>
-            <span class="bold">{{nbIncident}} incidents</span> à {{selectedStop | titlecase}}, engendrant
+            <span class="bold">{{nbIncident}} incidents</span> engendrant
           </p>
           <p>
             <span class="bold">
               <span *ngIf="retardTotalTime.hours > 0">{{retardTotalTime.hours}} heures, </span>
-              {{retardTotalTime.minutes}} minutes et {{retardTotalTime.seconds}} secondes de retard
+              {{retardTotalTime.minutes}} minutes
+              <span *ngIf="retardTotalTime.seconds > 0">et {{retardTotalTime.seconds}} secondes </span>de retard
             </span> cumulées et
           </p>
           <p>

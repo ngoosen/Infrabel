@@ -14,7 +14,7 @@ export class ParamsInUrlService {
   }
 
   incidentParamsInUrl(params: IncidentParams){
-    this._router.navigate(["/probleme/"], {queryParams: {stop: params.stop, date: params.selectedDate}})
+    this._router.navigate(["/probleme/"], {queryParams: {stop: params.stop}})
   }
 }
 export interface PonctualityParams{
@@ -22,6 +22,5 @@ export interface PonctualityParams{
   arrival: string
 }
 export interface IncidentParams{
-  stop: string,
-  selectedDate: string
+  stop: string
 }
