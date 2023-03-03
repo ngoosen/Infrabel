@@ -28,13 +28,13 @@
     </div>
 
     <!-- Sélection de date -->
-    <div class="date-picker">
+    <!-- <div class="date-picker">
       <mat-form-field class="example-full-width" appearance="fill">
         <mat-label>Choisir une autre date</mat-label>
         <input matInput [matDatepicker]="picker" [(ngModel)]="todaysDate" (click)="picker.open()" (ngModelChange)="getData()">
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
-    </div>
+    </div> -->
   </div>
 
   <hr *ngIf="!showResult">
@@ -93,12 +93,13 @@
         </section>
 
         <section>
-          <ngx-charts-line-chart *ngIf="monthlyDelayLineGraph.length > 0"
+          <ngx-charts-line-chart *ngIf="showLineGraph"
             [results]="monthlyDelayLineGraph"
             [legend]="true"
             [xAxis]="true"
             [yAxis]="true"
             [scheme]="graphTheme"
+            [timeline]="true"
           >
           </ngx-charts-line-chart>
         </section>
