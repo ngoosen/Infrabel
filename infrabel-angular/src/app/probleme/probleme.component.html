@@ -72,11 +72,14 @@
 
       <article id="monthly-incident-stats">
         <section>
-          <h3>
+          <!-- <h3>
             Durant la période du
             {{lastMonthDate.toLocaleDateString("fr-FR", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}} au
             {{todaysDate.toLocaleDateString("fr-FR", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}},
             il y a eu
+          </h3> -->
+          <h3>
+            Depuis {{oldestYear}}, {{departControl.value}} a connu:
           </h3>
           <p>
             <span class="bold">{{nbIncident}} incidents</span> à {{selectedStop | titlecase}}, engendrant
