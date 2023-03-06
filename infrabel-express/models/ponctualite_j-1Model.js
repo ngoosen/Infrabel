@@ -59,7 +59,8 @@ const PonctualiteJModel = {
             "JOIN numero_train nt ON t.FK_num_train = nt.id_num_train " +
             "JOIN arret a ON t.FK_arret = a.id_arret " +
             "JOIN dates d ON d.id_date = t.FK_date " +
-        "WHERE t.id_trajet = " + id)
+        "WHERE t.id_trajet = " + id + " " +
+        "ORDER BY d.id_date")
         })
     },
     getByStop: (stop) => {
@@ -90,7 +91,8 @@ const PonctualiteJModel = {
             "JOIN numero_train nt ON t.FK_num_train = nt.id_num_train " +
             "JOIN arret a ON t.FK_arret = a.id_arret " +
             "JOIN dates d ON d.id_date = t.FK_date " +
-        "WHERE a.nom_arret = '" + stop + "'")
+        "WHERE a.nom_arret = '" + stop + "' " +
+        "ORDER BY d.id_date")
         })
     },
     getAverageByStop: (stop) => {
