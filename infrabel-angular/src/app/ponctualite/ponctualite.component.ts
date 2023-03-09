@@ -1,16 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit , ChangeDetectorRef} from '@angular/core';
 import {FormControl} from '@angular/forms'
-import { withPreloading } from '@angular/router';
+import { withPreloading, ActivatedRoute } from '@angular/router';
 import { EMPTY, Observable} from 'rxjs';
 import { map,startWith } from 'rxjs';
 import { __values } from 'tslib';
 import { LigneArretData, LigneArretService } from '../services/ligne-arret.service';
-import {InstantService} from'../services/instant.service';
+import {InstantService, InstantData} from'../services/instant.service';
 import { PonctualiteJ1Service,PonctualiteJ1Data, AverageJ1Data} from '../services/ponctualite-j1.service';
 import {PonctualiteMomentData, PonctualiteMomentService }from '../services/ponctualite-moment.service'
 import { DataFormat, GroupedDataFormat, TimeFormat,FormatDataService } from '../services/format-data.service';
 import { data, Nbrminuteretard, tauxheureok } from './fakedb';
-
+import { ParamsInUrlService } from '../services/params-in-url.service';
 
 
 
@@ -27,7 +27,9 @@ export class PonctualiteComponent implements OnInit {
                 private _InstantService :InstantService ,
                 private _PonctulitéMoins1: PonctualiteJ1Service,
                 private _Ponctualite:PonctualiteMomentService,
-                private _format:FormatDataService
+                private _format:FormatDataService,
+                private _router: ActivatedRoute,
+                private _params: ParamsInUrlService
 
 
                 ){}
@@ -36,14 +38,8 @@ export class PonctualiteComponent implements OnInit {
   DateAjd:Date=new Date()
   options:string[]=[]
   instant: string[]=[]
-  ponctualite:number = 0
-  retard:number = 0
-  dateponct: Date = new Date()
   ligne:LigneArretData[]=[] ///////////////////////// <= ADRIANO J'AI MODIFIE CA => "ligne:string[]=[]" devient "ligne:LigneArretData[]=[]"
-  dateGraph:Date = new Date()
-  retardgraph: number=0
-  tauxgraph:number=0
-  trainmoins6:number=0
+  graphTheme: string = "nightLights"
 
 
 
@@ -53,18 +49,15 @@ export class PonctualiteComponent implements OnInit {
   departControl = new FormControl();
   arriveeControl = new FormControl();
   showResult:boolean=false
-  showGraph:boolean=true
+  showGraph:boolean=false
 
-  todaysDate : Date = new Date("2023-02-01")
-//
-  fakeDb:any
-fakeDbMinRe=Nbrminuteretard
-fakeDbpourc=tauxheureok
-//
+  selectedStop: string = this.departControl.value
 
+  todaysDate : Date = new Date("2022-02-01")
 //
-Datej_1:Date=new Date()
-lastMonthDate: Date = new Date(this.todaysDate.getMonth() == 0 ? this.todaysDate.getFullYear() - 1 : this.todaysDate.getFullYear(), this.todaysDate.getMonth() == 0 ? 11 : this.todaysDate.getMonth() - 1, this.todaysDate.getDate())
+Datej_1:Date=new Date("2023-02-01")
+lastMonthDate: Date = new Date(this.Datej_1.getMonth() == 0 ? this.Datej_1.getFullYear() - 1 : this.Datej_1.getFullYear(), this.Datej_1.getMonth() == 0 ? 11 : this.Datej_1.getMonth() - 1, this.Datej_1.getDate())
+showLineGraph:boolean=false
 //
  InfoMoiGraph : GroupedDataFormat[] = [
     {name: "% de chance de train a l heure", series: []},
@@ -103,19 +96,14 @@ lastMonthDate: Date = new Date(this.todaysDate.getMonth() == 0 ? this.todaysDate
       }
     })
 
-      //moment de la journée
-    this._InstantService.getInstants().subscribe({
-      next: (inst)=>{
-          let tempInst= inst
+    this._router.queryParamMap.subscribe((params: any) => {
+      console.log(params);
 
-          for(let opt of tempInst){
-            this.instant.push(opt.fr_instant)
-          }
-      },
-      error: (err) => {
-        console.log(err);
+      if(params.params.stop != undefined){
+        this.showValues(params.params.stop)
       }
     })
+
 
   }
     //fonction de filtrage des options
@@ -128,68 +116,24 @@ lastMonthDate: Date = new Date(this.todaysDate.getMonth() == 0 ? this.todaysDate
     }
 
   //fonction déclenchée par le bouton recherche
-  showValues(stop:string = this.departControl.value ) {
+  showValues(stop: string = this.departControl.value) {
+    this.selectedStop = stop
 
-    this.InfoMoiGraph=data
-    this.showResult=true
-    this.PonctualiteByStop()
-    // this.donneGraph()
-    this.dataLigne()
-    this.PoncutaliteAnnuelle()
-    this.getAverageDelayArrival(stop)
-    this.getAverageDelaydépart(stop)
-
+    this.PoncutaliteAnnuelle();
+    this.getAverageDelayArrival(stop);
+    this.getAverageGraph(stop);
+    this.showResult = true;
+    this._params.ponctualityParamsInUrl({stop: stop})
   }
+
 
 
   // fonction pour pas pouvoir cliquer sur bouton avant qui les input soit remplis
   areInputsValid(): boolean {
-    return this.departControl.value && this.arriveeControl.value;
+    return this.departControl.value
      }
 
-PonctualiteByStop(){
-  this._Ponctualite.getByStop(this.departControl.value).subscribe({
-    next:(data : PonctualiteMomentData[])=>{
 
-      for(let item of data){
-        this.dateponct=new Date()
-        this.ponctualite=item.ponctualite_pourcentage
-        this.retard=item.min_de_retard
-      }
-    },
-    error: (err) => {
-      console.log(err);
-    }
-  })
-}
-
-donneGraph(){
-  this._Ponctualite.getOnePonctuality(this.departControl.value).subscribe({
-    next:(data:PonctualiteMomentData[])=>{
-       for(let objet of data){
-        this.dateGraph= new Date(objet.date)
-        this.retardgraph=objet.min_de_retard
-        this.tauxgraph=objet.ponctualite_pourcentage
-        this.trainmoins6=objet.nb_train_inferieur_6_min
-       }
-    }
-  });
-}
-
-  //   Renvoie tous les liens entre les lignes et les arrêts sous forme de tableau qui contient les lignes et les arrêts associés
-  dataLigne(){
-    this._ligneArretService.getLineStops().subscribe({
-     next:(datas)=>{
-       for(let item of datas){
-         this.ligne.push(item) //////////////// <= ADRIANO C'EST ICI QUE T'UTILISE LA VARIABLE QUE J'AI MODIFIE
-       }
-     },
-     error: (err) => {
-       console.log(err);
-     }
-
-   })
-  }
 
 
 
@@ -201,39 +145,97 @@ trainmoins6Ic:number=0
 minuteretardIc:number=0
 selectedValue: string = "trainmoins6"
 selectedInstant:string="matin"
+langue:string='fr'
 
+Instant(){
+  this._InstantService.getInstantsByLanguage(this.langue).subscribe({
+    next:(data:InstantData[])=>{
+    for(let objet of data){
+        this.selectedInstant=objet.fr_instant
+    }
+  }
+
+  })
+}
+
+onselect() {
+
+  if (this.selectedValue === 'tauxgraph') {
+    this.selectedValue = 'tauxgraph';
+    this.PoncutaliteAnnuelle()
+    // console.log('selectedValue = ' + this.selectedValue);
+  } else if (this.selectedValue === 'retardgraph') {
+    this.selectedValue = 'retardgraph';
+    this.PoncutaliteAnnuelle()
+
+  } else if (this.selectedValue === 'trainmoins6') {
+    this.selectedValue = 'trainmoins6';
+    this.PoncutaliteAnnuelle()
+  } else {
+
+  }
+
+}
+
+onradio(){
+  if (this.selectedInstant === "matin") {
+    this.selectedInstant= 'matin';
+    this.PoncutaliteAnnuelle()
+    // console.log('selectedValue = ' + this.selectedValue);
+  } else if (this.selectedInstant === 'soir') {
+    this.selectedInstant = 'soir';
+    this.PoncutaliteAnnuelle()
+
+  } else if (this.selectedInstant === 'creuse') {
+    this.selectedInstant = 'creuse';
+    this.PoncutaliteAnnuelle()
+  } else if (this.selectedInstant === 'weekends') {
+    this.selectedInstant = 'weekends';
+    this.PoncutaliteAnnuelle()
+}
+}
 
 PoncutaliteAnnuelle(){
+
+
+  this.monthlyData = []
+  this.showGraph=false
   this._Ponctualite.getByStopInstant(this.departControl.value, this.selectedInstant).subscribe({
       next:(data:PonctualiteMomentData[])=>{
-        this.monthlyData = []
 
         for(let objet of data){
+          let tempDate  = new Date(objet.date)
 
-          let tempDate = new Date(objet.date)
+          let tempPonct = this.monthlyData.find(ponc => ponc.name == tempDate.toString())
+          // console.log(tempPonct);
 
-          let tempPonct = this.monthlyData.find(ponc => ponc.name == objet.date.toString())
 
-          if(tempPonct == undefined){
+          // if(objet.destination == (this.departControl.value).toString().toUpperCase()){
+            if(tempPonct == undefined){
+
 
              if(tempDate.getFullYear() == this.todaysDate.getFullYear()){
-              this.showGraph=false
-
+              console.log(this.selectedValue);
               switch (this.selectedValue) {
-                case 'trainmoins6':
-                  this.monthlyData.push({
+                  case 'trainmoins6':
+
+                  this.monthlyData.push({...this.monthlyData,
                     name: tempDate.toString(),
                     value: objet.nb_train_inferieur_6_min
                   })
-                break;
+
+                  break;
                 case 'retardgraph':
-                  this.monthlyData.push({
+
+                  this.monthlyData.push({...this.monthlyData,
                     name: tempDate.toString(),
                     value: objet.min_de_retard
                   })
+
                 break
                 case 'tauxgraph':
-                  this.monthlyData.push({
+
+                  this.monthlyData.push({...this.monthlyData,
                     name: tempDate.toString(),
                     value: objet.ponctualite_pourcentage
                   })
@@ -243,30 +245,8 @@ PoncutaliteAnnuelle(){
                 break;
 
               }
-              this.showGraph=true
             }
            }
-          else{
-            console.log(tempPonct);
-            this.showGraph=false
-            let index = this.monthlyData.indexOf(tempPonct)
-            switch (this.selectedValue) {
-              case 'trainmoins6':
-                this.monthlyData[index].value+= objet.nb_train_inferieur_6_min
-                break;
-              case 'retardgraph':
-                this.monthlyData[index].value += objet.min_de_retard
-                break
-              case 'tauxgraph':
-                this.monthlyData[index].value += objet.ponctualite_pourcentage
-                break
-              default:
-
-                break;
-            }
-            this.showGraph=true
-          }
-
 
         }
         this.showGraph = true
@@ -274,6 +254,7 @@ PoncutaliteAnnuelle(){
   })
 
 }
+
 
 averageDelayArrivalInSeconds: number = 0
 averageDelayArrivalInTime1: TimeFormat = {hours: 0, minutes: 0, seconds: 0}
@@ -284,7 +265,7 @@ averageDelayArrivalInTime2: TimeFormat = {hours: 0, minutes: 0, seconds: 0}
 averageDelayDepartureInTime2: TimeFormat = {hours: 0, minutes: 0, seconds: 0}
 
 getAverageDelayArrival(stop: string = this.departControl.value){
-  this._PonctulitéMoins1.getAveragePonctualityByStop(stop).subscribe({
+  this._PonctulitéMoins1.getAveragePonctualityByStop(this.departControl.value).subscribe({
     next: (data: AverageJ1Data[]) => {
       // formatage de la moyenne en heures, minutes et secondes
       this.averageDelayArrivalInTime1 = this._format.formatTime(data[0].moyenne_arrivee)
@@ -296,34 +277,67 @@ getAverageDelayArrival(stop: string = this.departControl.value){
   })
 }
 
-getAverageDelaydépart(stop:string=this.arriveeControl.value){
-  this._PonctulitéMoins1.getAveragePonctualityByStop(stop).subscribe({
-    next: (data: AverageJ1Data[]) => {
-      // formatage de la moyenne en heures, minutes et secondes
-      this.averageDelayArrivalInTime2 = this._format.formatTime(data[0].moyenne_arrivee)
-      this.averageDelayDepartureInTime2 = this._format.formatTime(data[0].moyenne_depart)
+
+GraphData: GroupedDataFormat[] = [
+  {name: "retard arrivé en seconde", series: []},
+  {name: "retard départ en seconde", series: []}
+];
+
+getAverageGraph(stop: string = this.departControl.value) {
+  this.showLineGraph=false
+  let dataMap = new Map<string, {retard_arr: number[], retard_dep: number[]}>();
+
+  this._PonctulitéMoins1.getPonctualityByStop(stop).subscribe({
+    next: (data: any) => {
+      // Parcourir les données et ajouter les valeurs aux tableaux correspondants dans l'objet Map
+      for (let objet of data) {
+        let DateaverageGraph = new Date(objet.date);
+
+        if (DateaverageGraph <= this.Datej_1 && DateaverageGraph >= this.lastMonthDate) {
+          // Vérifier si la date existe déjà dans l'objet Map
+          if (dataMap.has(DateaverageGraph.toString())) {
+            // Si la date existe, ajouter les nouvelles valeurs aux tableaux existants
+            let existingData = dataMap.get(DateaverageGraph.toString());
+            if (existingData) {
+              existingData.retard_arr.push(objet.retard_arr);
+              existingData.retard_dep.push(objet.retard_dep);
+            }
+          } else {
+            // Si la date n'existe pas, créer un nouveau tableau pour la date et ajouter les valeurs
+            let newData = {retard_arr: [objet.retard_arr], retard_dep: [objet.retard_dep]};
+            dataMap.set(DateaverageGraph.toString(), newData);
+          }
+        }
+      }
+
+      // Parcourir l'objet Map et calculer la moyenne des valeurs pour chaque jour
+      for (let [date, values] of dataMap) {
+        let sumRetardArr = values.retard_arr.reduce((a, b) => a + b, 0);
+        let sumRetardDep = values.retard_dep.reduce((a, b) => a + b, 0);
+        let avgRetardArr = sumRetardArr / values.retard_arr.length;
+        let avgRetardDep = sumRetardDep / values.retard_dep.length;
+
+        this.GraphData[0].series.push({
+          name: date,
+          value: avgRetardArr,
+        });
+
+        this.GraphData[1].series.push({
+          name: date,
+          value: avgRetardDep,
+        });
+      }
+      this.showLineGraph = true
+      console.log(this.GraphData);
     },
-    error: (err) => {
-      console.log("Erreur: " + err);
+    error: (error) => {
+      console.log(error);
     }
-  })
+  });
 }
 
 
-graphj_1 : GroupedDataFormat[] = [
-  {name: "retard arrivé", series: []},
-  {name: "retard départ", series: []}
-]
-getj_1Graph(stop:string=this.departControl.value){
-  for(let item of this.graphj_1){
-    item.series = []
-  }
-  this._PonctulitéMoins1.getPonctualityByStop(this.departControl.value).subscribe({
-    next:(data:PonctualiteJ1Data[])=>{
 
-    }
-  })
-  }
 
 
 }

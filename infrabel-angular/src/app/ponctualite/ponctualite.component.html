@@ -1,11 +1,11 @@
-<h1>Poncualité des trains</h1>
+<h1>Ponctualité des gares</h1>
 <div class="container">
   <div class="tout">
   <div class="Gare">
           <!-- Description et champ de recherche de la gare d'arrivée -->
-      <p>Choisissez votre gare de départ ainsi que la gare de votre destination, appuyez ensuite sur "rechercher" afin de voir la poncualite de votre train.</p>
+      <p>Entrez le nom de votre gare pour connaître sa ponctualité de façon générale.</p>
       <mat-form-field>
-        <input type="text" placeholder="départ" aria-label="Recherche" matInput [formControl]="departControl" [matAutocomplete]="auto1">
+        <input type="text" placeholder="Départ" aria-label="Recherche" matInput [formControl]="departControl" [matAutocomplete]="auto1">
         <mat-autocomplete #auto1="matAutocomplete">
           <mat-option *ngFor="let option of filterredOptionDepart |async" [value]="option |titlecase">
             {{ option | titlecase }}
@@ -13,14 +13,7 @@
         </mat-autocomplete>
       </mat-form-field>
 
-      <mat-form-field>
-        <input type="text" placeholder="arrivé" aria-label="Recherche" matInput [formControl]="arriveeControl" [matAutocomplete]="auto2">
-        <mat-autocomplete #auto2="matAutocomplete">
-          <mat-option *ngFor="let option of filterredOptionArrive |async" [value]="option |titlecase">
-            {{ option | titlecase }}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
+
 
       <!-- Bouton de recherche -->
       <button mat-raised-button  color="primary" (click)="showValues()"  [disabled]="!areInputsValid()">Lancer la recherche</button>
@@ -29,80 +22,77 @@
         <div *ngIf="showResult">
 
 
-          <h2>La ponctualité pour arrivé {{arriveeControl.value}}</h2>
-               <!-- bouton radio pour instant de la journée -->
+          <h2>La ponctualité pour la gare de  {{departControl.value}}</h2>
+
+          <h3>Données annuelles de la gare de {{departControl.value}} </h3>
+          <div class="instant">
+             <mat-radio-group [(ngModel)]="selectedInstant"   (ngModelChange)="onradio()">
+            <mat-radio-button value="matin">Pointe du matin (06H00-09h00)</mat-radio-button>
+            <mat-radio-button value="creuse">Heures creuses</mat-radio-button>
+            <mat-radio-button value="soir">Pointe du soir(16h00-19h00)</mat-radio-button>
+            <mat-radio-button value="weekends">Samedi/dimanche</mat-radio-button>
+          </mat-radio-group>
+        </div>
+          <div class="select">
+            <label>Sélectionnez le type d'infos: </label><br>
+            <select name="type" id="type" [(ngModel)]="selectedValue" (ngModelChange)="onselect()">
+              <option value="tauxgraph">Chance d'arriver à l'heure en %</option>
+              <option value="retardgraph">Nombre de minutes de retard</option>
+              <option value="trainmoins6">Train moins de 6 minutes de retard</option>
+            </select>
+
+          </div>
+       <div class="graph2" *ngIf="showGraph"  >
+
+        <ngx-charts-bar-vertical
+          [results]="monthlyData"
+          [yAxis]="true"
+          [xAxis]="true"
+          [showDataLabel]="true"
+          [scheme]="graphTheme"
+          [showGridLines]="false"
+
+          >
+      </ngx-charts-bar-vertical>
+      </div>
+
 
           <div class="résultat">
+
           <div class="hautgauche">
 
-            <h3> en moyenne vous avez : </h3><br>
+            <h3> En moyenne  : </h3><br>
 
-            le train arrivera à  {{departControl.value}} avec un retard moyen de:
+            <div class="moyenne">
+            À l'arrivée le train a  :
             <span *ngIf="averageDelayArrivalInTime1.hours > 0">{{averageDelayArrivalInTime1.hours}} heures </span>
             {{averageDelayArrivalInTime1.minutes}} minutes
-            et {{averageDelayArrivalInTime1.seconds}} secondes
-            <br>
-            le train démareras à {{departControl.value}} avec un retard moyen de:
+            et {{averageDelayArrivalInTime1.seconds}} secondes de retard
+            <br><br><br><br><br><br>
+
+            Au départ le train a  :
             <span *ngIf="averageDelayDepartureInTime1.hours > 0">{{averageDelayDepartureInTime1.hours}} heures </span>
             {{averageDelayDepartureInTime1.minutes}} minutes et
-            {{averageDelayDepartureInTime1.seconds}} secondes
+            {{averageDelayDepartureInTime1.seconds}} secondes de retard
             <br><br>
+          </div>
 
-           le train arrivera à {{arriveeControl.value}}avec un retard moyen de :
-            <span *ngIf="averageDelayArrivalInTime2.hours > 0">{{averageDelayArrivalInTime2.hours}} heures </span>
-            {{averageDelayArrivalInTime2.minutes}} minutes
-            et {{averageDelayArrivalInTime2.seconds}} secondes
-            <br>
-            le train démareras à {{arriveeControl.value}} avec un retard moyen de :
-            <span *ngIf="averageDelayDepartureInTime2.hours > 0">{{averageDelayDepartureInTime2.hours}} heures </span>
-            {{averageDelayDepartureInTime2.minutes}} minutes et
-            {{averageDelayDepartureInTime2.seconds}} secondes
 
         </div>
-          <div class="graph1">
-            <h3>Donnée globale sur le mois précédent</h3>
+          <div class="graph1" *ngIf="showLineGraph">
+            <h3>Données globales sur le mois précédent</h3>
            <ngx-charts-line-chart
-              [results]="InfoMoiGraph"
+              [results]="GraphData"
               [yAxis]="true"
               [xAxis]="true"
-              [legend]="true">
+              [legend]="true"
+              [scheme]="graphTheme">
 
            </ngx-charts-line-chart>
           </div>
     </div>
-    <h3>Donnée annuelle de la gare de {{arriveeControl.value}} </h3>
-    <div class="instant">
-       <mat-radio-group [(ngModel)]="selectedInstant">
-      <mat-radio-button value="matin">Pointe du matin (06H00-09h00)</mat-radio-button>
-      <mat-radio-button value="creuse">Heures creuses</mat-radio-button>
-      <mat-radio-button value="soir">Pointe du soir(16h00-19h00)</mat-radio-button>
-      <mat-radio-button value="weekends">Samedi/dimanche</mat-radio-button>
-    </mat-radio-group>
-  </div>
-    <div class="select">
-      <label>Choisissez les données que vous voulez :  </label><br>
-<select name="type"id="type" [(ngModel)]="selectedValue" >
-  <option value="">--Faite votre choix--
-</option>
-    <option value="tauxgraph">chance d'arriver a l'heure en %</option>
-    <option value="retardgraph">Nombre de minute de retard</option>
-    <option value="trainmoins6">Train moin de 6 minute de retard</option>
-</select>
 
-    </div>
- <div class="graph2">
 
-  <ngx-charts-bar-vertical *ngIf="showGraph"
-    [results]="monthlyData"
-    [yAxis]="true"
-    [xAxis]="true"
-    [showDataLabel]="true"
-    >
-</ngx-charts-bar-vertical>
-</div>
-
-        <!-- info général ( ligne -heure départ - arrivé - retard)
-      bouton pour choisir les instant(genre matin ou quoi) et donnée j-1  -->
     </div>
 </div>
 

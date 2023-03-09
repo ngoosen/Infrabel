@@ -10,7 +10,7 @@ export class ParamsInUrlService {
   constructor(private _router: Router) { }
 
   ponctualityParamsInUrl(params: PonctualityParams){
-    this._router.navigate(["/"], {queryParams: {departure: params.departure, arrival: params.arrival}})
+    this._router.navigate(["/ponctualite/"], {queryParams: {stop: params.stop}})
   }
 
   incidentParamsInUrl(params: IncidentParams){
@@ -18,8 +18,7 @@ export class ParamsInUrlService {
   }
 }
 export interface PonctualityParams{
-  departure: string,
-  arrival: string
+  stop: string
 }
 export interface IncidentParams{
   stop: string

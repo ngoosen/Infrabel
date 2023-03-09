@@ -106,6 +106,8 @@ export class ProblemeComponent {
 
     // Read params
     this._router.queryParamMap.subscribe((params: any) => {
+      console.log(params);
+
       // if(params.params.date != undefined){
       //   this.todaysDate = new Date(params.params.date)
       // }
@@ -138,8 +140,8 @@ export class ProblemeComponent {
     this.getLatestIncident(stop)
     // this.onSelect({name: "Heurt d'une personne", value: 1}) // => changer ça mais je sais pas par quoi
 
-    this.incidentPieGraph = pieChartIncidentTypes // => fake db, à supprimer
-    this.overallIncidentsBarGraph = barChartDelayByIncident // => fake db, à supprimer
+    // this.incidentPieGraph = pieChartIncidentTypes // => fake db, à supprimer
+    // this.overallIncidentsBarGraph = barChartDelayByIncident // => fake db, à supprimer
 
     this.showResult = true
   }
@@ -166,6 +168,7 @@ export class ProblemeComponent {
     this.nbTrainsSuppTotal = 0
     this.plusGrosRetard = 0
     this.showLineGraph = false
+    this.incidentPieGraph = []
 
     for(let item of this.monthlyDelayLineGraph){
       item.series = []
@@ -224,7 +227,7 @@ export class ProblemeComponent {
             incidentIsInGraph.value++
           }
         }
-        this.monthlyDelayLineGraph = data // => fake db, à supprimer
+        // this.monthlyDelayLineGraph = data // => fake db, à supprimer
         this.onSelect(this.incidentPieGraph[0])
 
       },
